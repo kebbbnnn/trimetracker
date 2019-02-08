@@ -28,13 +28,14 @@ import java.util.Map;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private PrivateChannel channel;
+    //private PrivateChannel channel;
     private Marker marker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        /*
         channel = MyApp.pusher.subscribePrivate("private-tracker-channel");
         channel.bind("client-track-event", new PrivateChannelEventListener() {
             @Override
@@ -51,8 +52,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onEvent(String s, String s1, String s2) {
                 Log.e("test", "s: " + s + ", s1: " + s1 + ", s2: " + s2);
             }
-        });
-
+        });*/
+        
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
