@@ -1,6 +1,8 @@
 package android.tracking.com.trimetracker1;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -8,6 +10,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
 private Button btnwelcome;
@@ -17,7 +25,8 @@ private Button btnwelcome;
     private EditText Password;
     private Button Login;
     private TextView userRegister;
-
+    private FirebaseAuth firebaseAuth;
+    private ProgressDialog progressDialog;
 
 
     @Override
@@ -29,6 +38,15 @@ private Button btnwelcome;
         Password = (EditText)findViewById(R.id.userPassword);
         Login = (Button)findViewById(R.id.btnUserLogin);
         userRegister = (TextView)findViewById(R.id.tvRegister);
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        progressDialog = new ProgressDialog(this);
+
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        if (user == null){
+            finish();
+            startActivity(new Intent(MainActivity.this, HomePage.class));
+        }
 
 
         Login.setOnClickListener(new View.OnClickListener() {
@@ -45,23 +63,32 @@ private Button btnwelcome;
             }
         });
 
-        btnwelcome = (Button)findViewById(R.id.btnWelcome);
-        btnwelcome.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, HomePage.class);
-                startActivity(intent);
-            }
-        });
+//        btnwelcome = (Button)findViewById(R.id.btnWelcome);
+//        btnwelcome.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(MainActivity.this, HomePage.class);
+//                startActivity(intent);
+//            }
+//        });
     }
     private  void validate(String userEmail, String userPassword){
-        if((userEmail.equals("Admin")) && (userPassword.equals("1234"))){
-            Intent intent = new Intent(MainActivity.this, HomePage.class);
-            startActivity(intent);
-        }else{
-            Toast toast = Toast.makeText(getApplicationContext(),"Incorrect Email or Password!", Toast.LENGTH_LONG);
-            toast.show();
+        progressDialog.setMessage("Logging in");
+        progressDialog.show();
 
-        }
+        firebaseAuth.signInWithEmailAndPassword(userEmail, userPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()){
+                    progressDialog.dismiss();
+                    Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(MainActivity.this, HomePage.class));
+                } else {
+                    progressDialog.dismiss();
+                    Toast.makeText(MainActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
     }
 }
