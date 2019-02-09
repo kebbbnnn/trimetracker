@@ -63,14 +63,14 @@ private Button btnwelcome;
             }
         });
 
-//        btnwelcome = (Button)findViewById(R.id.btnWelcome);
-//        btnwelcome.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(MainActivity.this, HomePage.class);
-//                startActivity(intent);
-//            }
-//        });
+        btnwelcome = (Button)findViewById(R.id.btnWelcome);
+        btnwelcome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, HomePage.class);
+                startActivity(intent);
+            }
+        });
     }
     private  void validate(String userEmail, String userPassword){
         progressDialog.setMessage("Logging in");
