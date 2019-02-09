@@ -39,6 +39,10 @@ dependencies {
     implementation 'com.pusher:pusher-java-client:1.5.0'
     //implementation 'com.pusher:pusher-http-java:1.0.0'
 
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:26.0.1'
+    implementation 'com.android.support:design:26.0.1'
+
 
 }
 apply plugin: 'com.google.gms.google-services'

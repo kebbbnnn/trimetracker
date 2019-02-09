@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "510235218363",
-    "firebase_url": "https://tmt-101.firebaseio.com",
-    "project_id": "tmt-101",
-    "storage_bucket": "tmt-101.appspot.com"
+    "project_number": "567860528129",
+    "firebase_url": "https://trimetrackweb.firebaseio.com",
+    "project_id": "trimetrackweb",
+    "storage_bucket": "trimetrackweb.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:510235218363:android:88fbfcfbc21555a6",
+        "mobilesdk_app_id": "1:567860528129:android:88fbfcfbc21555a6",
         "android_client_info": {
           "package_name": "android.tracking.com.trimetracker1"
         }
       },
       "oauth_client": [
         {
-          "client_id": "510235218363-f2ru073k54mh8g62mvultuau05ma4d6c.apps.googleusercontent.com",
+          "client_id": "567860528129-6b0tpn2b9pc4foo991s7mr3qm81kp9mk.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "android.tracking.com.trimetracker1",
@@ -23,13 +23,13 @@
           }
         },
         {
-          "client_id": "510235218363-j0lvtu58qrvj0jof5okg5381ebe497vt.apps.googleusercontent.com",
+          "client_id": "567860528129-m4ljc29lkdkfc2crdbjek09k5429hi6o.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDYC022L8b1mQuUPuBjPnu7QiUdlW93vjY"
+          "current_key": "AIzaSyA41i7F9Hw7fGCvWnTNUKpBz2fwQOsnUlE"
         }
       ],
       "services": {
@@ -40,7 +40,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "510235218363-j0lvtu58qrvj0jof5okg5381ebe497vt.apps.googleusercontent.com",
+              "client_id": "567860528129-m4ljc29lkdkfc2crdbjek09k5429hi6o.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
