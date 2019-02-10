@@ -45,7 +45,7 @@ private Button btnwelcome;
         FirebaseUser user = firebaseAuth.getCurrentUser();
         if (user == null){
             finish();
-            startActivity(new Intent(MainActivity.this, HomePage.class));
+            startActivity(new Intent(MainActivity.this, HomePageNav.class));
         }
 
 
@@ -67,7 +67,7 @@ private Button btnwelcome;
         btnwelcome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, HomePage.class);
+                Intent intent = new Intent(MainActivity.this, HomePageNav.class);
                 startActivity(intent);
             }
         });
@@ -82,7 +82,7 @@ private Button btnwelcome;
                 if(task.isSuccessful()){
                     progressDialog.dismiss();
                     Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(MainActivity.this, HomePage.class));
+                    startActivity(new Intent(MainActivity.this, HomePageNav.class));
                 } else {
                     progressDialog.dismiss();
                     Toast.makeText(MainActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
