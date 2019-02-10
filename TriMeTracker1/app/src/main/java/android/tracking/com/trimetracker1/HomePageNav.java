@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.CardView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,6 +21,7 @@ public class HomePageNav extends AppCompatActivity
 
     private Button btnstarttrip;
     private Button btntrack;
+    private CardView starttripcard, trackpassengercard;
 
 
 
@@ -50,12 +52,31 @@ public class HomePageNav extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        starttripcard = (CardView)findViewById(R.id.start_trip);
+        trackpassengercard = (CardView)findViewById(R.id.track_passenger);
 
 
         btnstarttrip = (Button)findViewById(R.id.btnStartTrip);
         btntrack = (Button)findViewById(R.id.btnTrack);
 
-        btnstarttrip.setOnClickListener(new View.OnClickListener() {
+//        btnstarttrip.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(HomePageNav.this, MapsActivity.class);
+//                startActivity(intent);
+//            }
+//        });
+//
+//
+//        btntrack.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(HomePageNav.this, Track.class);
+//                startActivity(intent);
+//            }
+//        });
+
+        starttripcard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(HomePageNav.this, MapsActivity.class);
@@ -64,7 +85,7 @@ public class HomePageNav extends AppCompatActivity
         });
 
 
-        btntrack.setOnClickListener(new View.OnClickListener() {
+        trackpassengercard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(HomePageNav.this, Track.class);
