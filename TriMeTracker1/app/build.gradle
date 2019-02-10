@@ -35,27 +35,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:16.0.6'
     implementation 'com.google.firebase:firebase-core:16.0.6'
     implementation 'com.google.firebase:firebase-auth:16.1.0'
-<<<<<<< HEAD
-
-    implementation 'com.android.support:design:26.1.0'
-    implementation 'com.pusher:pusher-java-client:1.5.0'
-    //implementation 'com.pusher:pusher-http-java:1.0.0'
-
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:26.0.1'
-    implementation 'com.android.support:design:26.0.1'
-
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support:design:26.1.0'
-
-    implementation 'com.android.support:cardview-v7:26.1.0'
-
-=======
     // For testing and automation
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
->>>>>>> 8c2125ca75d93c3861a872488d70f4b3b066bf19
 }
 
 apply plugin: 'com.google.gms.google-services'
