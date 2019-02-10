@@ -2,15 +2,15 @@ package android.tracking.com.trimetracker1;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.tracking.com.trimetracker1.data.LocationData;
 import android.util.Log;
-import android.view.View;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -19,14 +19,14 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
-
+    private static final long LOCATION_UPDATE_INTERVAL = 30000L;
     private GoogleMap mMap;
     private Marker marker;
+    private long lastLocUpdate = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,12 +37,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e("test click", "test click");
-            }
-        });
+        fab.setOnClickListener(v -> Log.e("test click", "test click"));
     }
 
 
@@ -83,18 +78,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void updatelocation() {
         mMap.setMyLocationEnabled(true);
-        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-            @Override
-            public void onMyLocationChange(Location location) {
-                if (marker != null) {
-                    marker.remove();
-                }
-                marker = mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("Hello World!"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-                Map<String, Double> loc = new HashMap<>();
-                loc.put("latitude", location.getLatitude());
-                loc.put("longitude", location.getLongitude());
+        mMap.setOnMyLocationChangeListener(location -> {
+            if (marker != null) {
+                marker.remove();
+            }
+            marker = mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("Hello World!"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+
+            if (SystemClock.elapsedRealtime() - lastLocUpdate < LOCATION_UPDATE_INTERVAL) {
+                return;
+            }
+            lastLocUpdate = SystemClock.elapsedRealtime();
+
+            saveLocationToDb(location.getLatitude(), location.getLongitude());
+        });
+    }
+
+    private void saveLocationToDb(double lat, double lng) {
+        DatabaseReference locRef = FirebaseDatabase.getInstance().getReference().child("locations").push();
+        LocationData locData = new LocationData("OSHRKoPcMTVCSDEmrLeGUDJWMx93", lat, lng);
+        locRef.setValue(locData, (error, databaseReference) -> {
+            if (error != null) {
+                Log.e("test", "Error saving location to database, Error: " + error.getMessage() + ", Details: " + error.getDetails() + ", Code: " + error.getCode());
+            } else {
+                Log.e("test", "Location successfully saved!");
             }
         });
     }
