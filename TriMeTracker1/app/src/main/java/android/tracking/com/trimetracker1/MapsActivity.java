@@ -19,8 +19,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.pusher.client.channel.PrivateChannel;
-import com.pusher.client.channel.PrivateChannelEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,32 +26,12 @@ import java.util.Map;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    //private PrivateChannel channel;
     private Marker marker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        /*
-        channel = MyApp.pusher.subscribePrivate("private-tracker-channel");
-        channel.bind("client-track-event", new PrivateChannelEventListener() {
-            @Override
-            public void onAuthenticationFailure(String s, Exception e) {
-                Log.e("test", "Auth failure, s: " + s + ", exception: " + e.getMessage());
-            }
-
-            @Override
-            public void onSubscriptionSucceeded(String s) {
-                Log.e("test", "s: " + s);
-            }
-
-            @Override
-            public void onEvent(String s, String s1, String s2) {
-                Log.e("test", "s: " + s + ", s1: " + s1 + ", s2: " + s2);
-            }
-        });*/
-        
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -117,7 +95,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Map<String, Double> loc = new HashMap<>();
                 loc.put("latitude", location.getLatitude());
                 loc.put("longitude", location.getLongitude());
-                //channel.trigger("client-track-event", new JSONObject(loc).toString());
             }
         });
     }
