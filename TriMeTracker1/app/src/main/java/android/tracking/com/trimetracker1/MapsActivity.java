@@ -82,8 +82,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (marker != null) {
                 marker.remove();
             }
-            marker = mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("Hello World!"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            marker = mMap.addMarker(new MarkerOptions().position(latLng).title("Hello World!"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
             if (SystemClock.elapsedRealtime() - lastLocUpdate < LOCATION_UPDATE_INTERVAL) {

@@ -71,7 +71,7 @@ public class HomePageNav extends AppCompatActivity
 //        btntrack.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
-//                Intent intent = new Intent(HomePageNav.this, Track.class);
+//                Intent intent = new Intent(HomePageNav.this, TrackActivity.class);
 //                startActivity(intent);
 //            }
 //        });
@@ -88,7 +88,7 @@ public class HomePageNav extends AppCompatActivity
         trackpassengercard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(HomePageNav.this, Track.class);
+                Intent intent = new Intent(HomePageNav.this, TrackActivity.class);
                 startActivity(intent);
             }
         });

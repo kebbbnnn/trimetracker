@@ -10,6 +10,10 @@ public class LocationData {
     public double lng;
     public long timestamp = 0L;
 
+    //@formatter:off
+    public LocationData() {}
+    //@formatter:on
+
     public LocationData(String userId, double lat, double lng, long timestamp) {
         this.userId = userId;
         this.lat = lat;

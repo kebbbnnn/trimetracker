@@ -29,7 +29,7 @@ private Button btntrack;
         btntrack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(HomePage.this, Track.class);
+                Intent intent = new Intent(HomePage.this, TrackActivity.class);
                 startActivity(intent);
             }
         });
