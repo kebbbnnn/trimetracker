@@ -56,26 +56,6 @@ public class HomePageNav extends AppCompatActivity
         trackpassengercard = (CardView)findViewById(R.id.track_passenger);
 
 
-        btnstarttrip = (Button)findViewById(R.id.btnStartTrip);
-        btntrack = (Button)findViewById(R.id.btnTrack);
-
-//        btnstarttrip.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(HomePageNav.this, MapsActivity.class);
-//                startActivity(intent);
-//            }
-//        });
-//
-//
-//        btntrack.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(HomePageNav.this, TrackActivity.class);
-//                startActivity(intent);
-//            }
-//        });
-
         starttripcard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

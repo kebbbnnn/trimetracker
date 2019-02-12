@@ -44,7 +44,7 @@ private Button btnwelcome;
         progressDialog = new ProgressDialog(this);
 
         FirebaseUser user = firebaseAuth.getCurrentUser();
-        if (user == null){
+        if (user != null){
             finish();
             startActivity(new Intent(MainActivity.this, HomePageNav.class));
         }
