@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -62,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
         progressDialog.show();
 
         firebaseAuth.signInWithEmailAndPassword(userEmail, userPassword).addOnCompleteListener(task -> {
-            Log.e("test", task.getResult().getUser().getUid());
             if (task.isSuccessful()) {
                 progressDialog.dismiss();
                 Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();

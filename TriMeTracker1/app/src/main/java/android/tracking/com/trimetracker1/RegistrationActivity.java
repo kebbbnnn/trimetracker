@@ -53,6 +53,7 @@ public class RegistrationActivity extends AppCompatActivity {
         userName = findViewById(R.id.rName);
         userEmail = findViewById(R.id.rEmail);
         userPassword = findViewById(R.id.rPassword);
+        userPassword2 = findViewById(R.id.rPassword2);
         regButton = findViewById(R.id.btnRegister);
         userLogin = findViewById(R.id.tvUserLogin);
     }
