@@ -19,7 +19,7 @@ import org.w3c.dom.Text;
 
 public class RegistrationActivity extends AppCompatActivity {
 
-    private EditText userName, userPassword, userEmail;
+    private EditText userName, userPassword, userPassword2, userEmail;
     private Button regButton;
     private TextView userLogin;
     private FirebaseAuth firebaseAuth;
@@ -69,6 +69,7 @@ public class RegistrationActivity extends AppCompatActivity {
         userName = (EditText)findViewById(R.id.rName);
         userEmail = (EditText)findViewById(R.id.rEmail);
         userPassword = (EditText)findViewById(R.id.rPassword);
+        userPassword2 = (EditText)findViewById(R.id.rPassword2);
         regButton = (Button)findViewById(R.id.btnRegister);
         userLogin = (TextView)findViewById(R.id.tvUserLogin);
 
@@ -77,11 +78,17 @@ public class RegistrationActivity extends AppCompatActivity {
         Boolean result = false;
         String name = userName.getText().toString();
         String password = userPassword.getText().toString();
+        String password2 = userPassword2.getText().toString();
         String email = userEmail.getText().toString();
 
-        if(name.isEmpty() || password.isEmpty() || email.isEmpty()){
+        if(name.isEmpty() || password.isEmpty() || password2.isEmpty() || email.isEmpty()){
             Toast.makeText(this, "Please enter all the details",Toast.LENGTH_SHORT).show();
-        }else {
+
+
+        }else if(!password.equals(password2)){
+            Toast.makeText(this, "Password did not match", Toast.LENGTH_SHORT).show();
+
+        } else {
             result = true;
         }
         return result;
