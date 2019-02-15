@@ -19,6 +19,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -27,6 +28,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private Marker marker;
     private long lastLocUpdate = 0;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +40,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(v -> Log.e("test click", "test click"));
+        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
 
@@ -98,7 +101,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void saveLocationToDb(double lat, double lng) {
         DatabaseReference locRef = FirebaseDatabase.getInstance().getReference().child("locations").push();
-        LocationData locData = new LocationData("OSHRKoPcMTVCSDEmrLeGUDJWMx93", lat, lng);
+        LocationData locData = new LocationData(userId, lat, lng);
         locRef.setValue(locData, (error, databaseReference) -> {
             if (error != null) {
                 Log.e("test", "Error saving location to database, Error: " + error.getMessage() + ", Details: " + error.getDetails() + ", Code: " + error.getCode());
