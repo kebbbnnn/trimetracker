@@ -46,18 +46,8 @@ public class RegistrationActivity extends AppCompatActivity {
 
         });
 
-<<<<<<< HEAD
-    private void setupUIViews(){
-        userName = (EditText)findViewById(R.id.rName);
-        userEmail = (EditText)findViewById(R.id.rEmail);
-        userPassword = (EditText)findViewById(R.id.rPassword);
-        userPassword2 = (EditText)findViewById(R.id.rPassword2);
-        regButton = (Button)findViewById(R.id.btnRegister);
-        userLogin = (TextView)findViewById(R.id.tvUserLogin);
-=======
         userLogin.setOnClickListener(v -> startActivity(new Intent(RegistrationActivity.this, MainActivity.class)));
     }
->>>>>>> 5a7ff91c61662486fbba2b92994a940c3f362948
 
     private void setupUIViews() {
         userName = findViewById(R.id.rName);
@@ -74,18 +64,10 @@ public class RegistrationActivity extends AppCompatActivity {
         String password2 = userPassword2.getText().toString();
         String email = userEmail.getText().toString();
 
-<<<<<<< HEAD
-        if(name.isEmpty() || password.isEmpty() || password2.isEmpty() || email.isEmpty()){
-            Toast.makeText(this, "Please enter all the details",Toast.LENGTH_SHORT).show();
-
-
-        }else if(!password.equals(password2)){
-            Toast.makeText(this, "Password did not match", Toast.LENGTH_SHORT).show();
-
-=======
-        if (name.isEmpty() || password.isEmpty() || email.isEmpty()) {
+        if (name.isEmpty() || password.isEmpty() || password2.isEmpty() || email.isEmpty()) {
             Toast.makeText(this, "Please enter all the details", Toast.LENGTH_SHORT).show();
->>>>>>> 5a7ff91c61662486fbba2b92994a940c3f362948
+        } else if (!password.equals(password2)) {
+            Toast.makeText(this, "Password did not match", Toast.LENGTH_SHORT).show();
         } else {
             result = true;
         }
