@@ -30,6 +30,8 @@ public class RegistrationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_registration);
         setupUIViews();
 
+        getSupportActionBar().setTitle("Create Account");
+
         firebaseAuth = FirebaseAuth.getInstance();
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Creating account. Please wait...");
@@ -72,7 +74,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private void setupUIViews() {
         userName = findViewById(R.id.rName);
-        userEmail = findViewById(R.id.rEmail);
+        userEmail = findViewById(R.id.rContact);
         userPassword = findViewById(R.id.rPassword);
         userPassword2 = findViewById(R.id.rPassword2);
         regButton = findViewById(R.id.btnRegister);
