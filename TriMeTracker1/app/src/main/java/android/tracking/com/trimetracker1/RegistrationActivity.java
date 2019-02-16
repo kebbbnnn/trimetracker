@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -44,22 +45,31 @@ public class RegistrationActivity extends AppCompatActivity {
 
                 firebaseAuth.createUserWithEmailAndPassword(user_email, user_password).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("users").push();
                         FirebaseUser user = task.getResult().getUser();
                         String userId = user.getUid();
                         String name = userName.getText().toString();
                         String email = user.getEmail();
                         String mobile = userContact.getText().toString();
                         UserData userData = new UserData(userId, name, email, mobile);
-                        userRef.setValue(userData, (error, databaseReference) -> {
-                            progressDialog.dismiss();
-                            if (error != null) {
-                                showError();
+
+                        UserProfileChangeRequest userUpdate = new UserProfileChangeRequest.Builder().setDisplayName(userData.name).build();
+                        user.updateProfile(userUpdate).addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("users").push();
+                                userRef.setValue(userData, (error, databaseReference) -> {
+                                    progressDialog.dismiss();
+                                    if (error != null) {
+                                        showError();
+                                    } else {
+                                        showSuccess();
+                                        startActivity(new Intent(RegistrationActivity.this, MainActivity.class));
+                                    }
+                                });
                             } else {
-                                showSuccess();
-                                startActivity(new Intent(RegistrationActivity.this, MainActivity.class));
+                                showError();
                             }
                         });
+
                     } else {
                         progressDialog.dismiss();
                         showError();

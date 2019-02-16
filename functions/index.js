@@ -5,18 +5,18 @@ const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
 /* Listens for new messages added to /messages/:pushId and sends a notification to subscribed users */
-exports.pushNotification = functions.database.ref('/messages/{pushId}').onWrite( event => {
+exports.pushNotification = functions.database.ref('/messages/{pushId}').onWrite( ( change, context) => {
 
     console.log('Push notification event triggered');
     
     /* Grab the current value of what was written to the Realtime Database */
-        var valueObject = event.data.val();
+        var valueObject = change.after.val();
     
     /* Create a notification and data payload. They contain the notification information, and message to be sent respectively */ 
         const payload = {
             notification: {
-                title: 'trimetrack',
-                body: "New message",
+                title: 'Trimetrack',
+                body: "{0} shared location".format(valueObject.sender),
                 sound: "default"
             },
             data: {
@@ -33,3 +33,11 @@ exports.pushNotification = functions.database.ref('/messages/{pushId}').onWrite(
     
     return admin.messaging().sendToTopic("notifications", payload, options);
     });
+
+String.prototype.format = function () {
+    var a = this;
+    for (var k in arguments) {
+        a = a.replace(new RegExp("\\{" + k + "\\}", 'g'), arguments[k]);
+    }
+    return a
+}
