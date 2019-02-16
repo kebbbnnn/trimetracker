@@ -44,10 +44,11 @@ public class ContactsListAdapter extends RecyclerView.Adapter<ContactsListAdapte
             String id = (String) singleUser.get("id");
             String name = (String) singleUser.get("name");
             String email = (String) singleUser.get("email");
+            String mobile = (String) singleUser.get("mobile");
             long createdAt = (Long) singleUser.get("createdAt");
 
             if (!currentUserId.equals(id)) {
-                UserData user = new UserData(id, name, email, createdAt);
+                UserData user = new UserData(id, name, email, mobile, createdAt);
                 users.add(user);
             }
         }

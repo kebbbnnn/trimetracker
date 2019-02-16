@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.tracking.com.trimetracker1.data.UserData;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -18,7 +17,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class RegistrationActivity extends AppCompatActivity {
 
-    private EditText userName, userPassword, userPassword2, userEmail;
+    private EditText userName, userPassword, userPassword2, userEmail, userContact;
     private Button regButton;
     private TextView userLogin;
     private FirebaseAuth firebaseAuth;
@@ -47,10 +46,11 @@ public class RegistrationActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("users").push();
                         FirebaseUser user = task.getResult().getUser();
-                        UserData userData = new UserData(user.getUid(), userName.getText().toString(), user.getEmail());
-                        Log.e("test", "userId: " + userData.id);
-                        Log.e("test", "userName: " + userData.name);
-                        Log.e("test", "userEmail: " + userData.email);
+                        String userId = user.getUid();
+                        String name = userName.getText().toString();
+                        String email = user.getEmail();
+                        String mobile = userContact.getText().toString();
+                        UserData userData = new UserData(userId, name, email, mobile);
                         userRef.setValue(userData, (error, databaseReference) -> {
                             progressDialog.dismiss();
                             if (error != null) {
@@ -74,7 +74,8 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private void setupUIViews() {
         userName = findViewById(R.id.rName);
-        userEmail = findViewById(R.id.rContact);
+        userEmail = findViewById(R.id.rEmail);
+        userContact = findViewById(R.id.rContact);
         userPassword = findViewById(R.id.rPassword);
         userPassword2 = findViewById(R.id.rPassword2);
         regButton = findViewById(R.id.btnRegister);

@@ -7,20 +7,23 @@ public class UserData {
     public String id;
     public String name;
     public String email;
+    public String mobile;
     public long createdAt;
     public List<String> contacts = Collections.emptyList();
 
-    public UserData(String id, String name, String email, long createdAt) {
+    public UserData(String id, String name, String email, String mobile, long createdAt) {
         this.id = id;
         this.name = name;
         this.email = email;
+        this.mobile = mobile;
         this.createdAt = createdAt;
     }
 
-    public UserData(String id, String name, String email) {
+    public UserData(String id, String name, String email, String mobile) {
         this.id = id;
         this.name = name;
         this.email = email;
+        this.mobile = mobile;
         this.createdAt = System.currentTimeMillis();
     }
 }
