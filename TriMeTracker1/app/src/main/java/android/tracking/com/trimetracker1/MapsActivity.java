@@ -60,7 +60,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        FirebaseMessaging.getInstance().subscribeToTopic("notifications");
         msgRef = FirebaseDatabase.getInstance().getReference("messages");
     }
 
