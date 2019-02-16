@@ -1,16 +1,22 @@
 package android.tracking.com.trimetracker1;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.tracking.com.trimetracker1.adapter.ContactsListAdapter;
 import android.tracking.com.trimetracker1.data.LocationData;
+import android.tracking.com.trimetracker1.data.UserData;
+import android.tracking.com.trimetracker1.support.ItemClickSupport;
 import android.util.Log;
+import android.view.View;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -22,9 +28,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, ItemClickSupport.OnItemClickListener {
     private static final long LOCATION_UPDATE_INTERVAL = 30000L;
+    private SlidingUpPanelLayout slidingLayout;
+    private ContactsListAdapter adapter;
+    private RecyclerView list;
     private GoogleMap mMap;
     private Marker marker;
     private long lastLocUpdate = 0;
@@ -34,15 +44,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        slidingLayout = findViewById(R.id.sliding_layout);
+        list = findViewById(R.id.list);
+        list.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new ContactsListAdapter();
+        list.setAdapter(adapter);
+        ItemClickSupport.addTo(list).setOnItemClickListener(this);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(v -> Log.e("test click", "test click"));
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
+    @Override
+    public void onItemClick(RecyclerView parent, View view, int position, long id) {
+        slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        UserData user = adapter.users.get(position);
+    }
 
     /**
      * Manipulates the map once available.
@@ -56,13 +75,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(-34, 151);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            updatelocation();
+            updateLocation();
 
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
@@ -74,12 +88,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                updatelocation();
+                updateLocation();
             }
         }
     }
 
-    private void updatelocation() {
+    @SuppressLint("MissingPermission")
+    private void updateLocation() {
         mMap.setMyLocationEnabled(true);
         mMap.setOnMyLocationChangeListener(location -> {
             if (marker != null) {
