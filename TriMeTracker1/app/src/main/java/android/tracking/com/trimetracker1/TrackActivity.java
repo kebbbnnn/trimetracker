@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.tracking.com.trimetracker1.data.LocationData;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -19,17 +20,33 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import static android.text.TextUtils.isEmpty;
+
 public class TrackActivity extends FragmentActivity implements OnMapReadyCallback {
+
+    private TextView textSenderName;
 
     private GoogleMap googleMap;
     private Marker marker;
     private DatabaseReference locRef;
     private ValueEventListener locationListener;
+    private String senderId = null, senderName = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_track);
+        textSenderName = findViewById(R.id.textSenderName);
+        if (getIntent().getExtras() != null) {
+            for (String key : getIntent().getExtras().keySet()) {
+                if (key.equals("senderId")) {
+                    senderId = (String) getIntent().getExtras().get(key);
+                }
+                if (key.equals("senderName")) {
+                    senderName = (String) getIntent().getExtras().get(key);
+                }
+            }
+        }
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -39,32 +56,40 @@ public class TrackActivity extends FragmentActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap map) {
         this.googleMap = map;
 
-        locRef = FirebaseDatabase.getInstance().getReference().child("locations");
+        if (!isEmpty(senderName)) {
+            textSenderName.setText(String.format("%s's live location", senderName));
+        }
 
-        locationListener = locRef
-                .orderByChild("userId")
-                .equalTo("OSHRKoPcMTVCSDEmrLeGUDJWMx93")
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            LocationData data = snapshot.getValue(LocationData.class);
+        if (!isEmpty(senderId)) {
+            locRef = FirebaseDatabase.getInstance().getReference().child("locations");
 
-                            if (marker != null) {
-                                marker.remove();
+            locationListener = locRef
+                    .orderByChild("userId")
+                    .equalTo(senderId)
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                LocationData data = snapshot.getValue(LocationData.class);
+
+                                if (marker != null) {
+                                    marker.remove();
+                                }
+                                LatLng latLng = new LatLng(data.lat, data.lng);
+                                marker = googleMap.addMarker(new MarkerOptions().position(latLng).title("Hello World!"));
+                                googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                                googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
                             }
-                            LatLng latLng = new LatLng(data.lat, data.lng);
-                            marker = googleMap.addMarker(new MarkerOptions().position(latLng).title("Hello World!"));
-                            googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                            googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.e("error", "Error: " + databaseError.getMessage());
-                    }
-                });
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Log.e("error", "Error: " + databaseError.getMessage());
+                        }
+                    });
+        } else {
+            //TODO: handle
+        }
     }
 
     @Override

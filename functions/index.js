@@ -16,12 +16,14 @@ exports.pushNotification = functions.database.ref('/messages/{pushId}').onWrite(
         const payload = {
             notification: {
                 title: 'Trimetrack',
-                body: "{0} shared location".format(valueObject.sender),
+                body: "{0} shared location".format(valueObject.senderName),
                 sound: "default"
             },
             data: {
                 title: valueObject.title,
-                message: valueObject.message
+                message: valueObject.message,
+                senderId : valueObject.senderId,
+                senderName : valueObject.senderName
             }
         };
     

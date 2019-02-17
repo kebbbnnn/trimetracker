@@ -30,7 +30,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, ItemClickSupport.OnItemClickListener {
@@ -41,7 +40,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private Marker marker;
     private long lastLocUpdate = 0;
-    private FirebaseUser firebaseUser;
+    private FirebaseUser currentUser;
     private DatabaseReference msgRef;
 
     @Override
@@ -58,7 +57,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         msgRef = FirebaseDatabase.getInstance().getReference("messages");
     }
@@ -67,7 +66,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onItemClick(RecyclerView parent, View view, int position, long id) {
         slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         UserData user = adapter.users.get(position);
-        Message message = new Message("event-location-share", firebaseUser.getDisplayName(), user.id);
+        Message message = new Message("event-location-share", currentUser.getDisplayName(), currentUser.getUid(), user.id);
         msgRef.push().setValue(message);
     }
 
@@ -76,8 +75,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * This callback is triggered when the map is ready to be used.
      * This is where we can add markers or lines, add listeners or move the camera. In this case,
      * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the firebaseUser will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the firebaseUser has
+     * If Google Play services is not installed on the device, the currentUser will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the currentUser has
      * installed Google Play services and returned to the app.
      */
     @Override
@@ -124,7 +123,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void saveLocationToDb(double lat, double lng) {
         DatabaseReference locRef = FirebaseDatabase.getInstance().getReference().child("locations").push();
-        LocationData locData = new LocationData(firebaseUser.getUid(), lat, lng);
+        LocationData locData = new LocationData(currentUser.getUid(), lat, lng);
         locRef.setValue(locData, (error, databaseReference) -> {
             if (error != null) {
                 Log.e("test", "Error saving location to database, Error: " + error.getMessage() + ", Details: " + error.getDetails() + ", Code: " + error.getCode());

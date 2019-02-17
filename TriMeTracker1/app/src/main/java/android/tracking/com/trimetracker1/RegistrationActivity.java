@@ -63,6 +63,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                     } else {
                                         showSuccess();
                                         startActivity(new Intent(RegistrationActivity.this, MainActivity.class));
+                                        finish();
                                     }
                                 });
                             } else {
