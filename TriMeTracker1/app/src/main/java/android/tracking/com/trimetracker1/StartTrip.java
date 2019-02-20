@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.tracking.com.trimetracker1.data.Vehicle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,6 +28,7 @@ public class StartTrip extends AppCompatActivity {
     private View nfcContainer, platenumberContainer;
     private EditText editPlatenumber;
     private Button buttonNext;
+    private TextView textLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,12 +39,13 @@ public class StartTrip extends AppCompatActivity {
         platenumberContainer = findViewById(R.id.layoutPlatenumber);
         editPlatenumber = findViewById(R.id.editPlatenumber);
         buttonNext = findViewById(R.id.btnNext);
+        textLabel = findViewById(R.id.textLabel);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(getApplicationContext());
         if (mNfcAdapter == null) {
-            nfcContainer.setVisibility(View.GONE);
-            platenumberContainer.setVisibility(View.VISIBLE);
-
+            openPlatenumberContainer("This device is not supported with NFC. Please type platenumber.");
             buttonNext.setOnClickListener(v -> {
                 String plateNumber = editPlatenumber.getText().toString();
                 Vehicle vehicle = new Vehicle();
@@ -83,14 +86,26 @@ public class StartTrip extends AppCompatActivity {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())
                 || NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction()) || NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
             Tag iTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             if (iTag != null) {
-                String nfc_code = TagReader.readTag(iTag, intent).substring(3);
+                String nfc_code = TagReader.readTag(iTag, intent);
                 if (!isEmpty(nfc_code)) {
+                    nfc_code = nfc_code.substring(3);
                     DatabaseReference vehicleRef = FirebaseDatabase.getInstance().getReference().child("vehicleinfo");
                     vehicleRef.child(nfc_code).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -111,11 +126,19 @@ public class StartTrip extends AppCompatActivity {
                     });
                 } else {
                     Toast.makeText(this, "unrecognized nfc tag", Toast.LENGTH_SHORT).show();
+                    openPlatenumberContainer("Unrecognized NFC tag. Please type platenumber.");
                 }
             } else {
                 Toast.makeText(this, "unrecognized nfc tag", Toast.LENGTH_SHORT).show();
+                openPlatenumberContainer("Unrecognized NFC tag. Please type platenumber.");
             }
         }
+    }
+
+    private void openPlatenumberContainer(String label) {
+        textLabel.setText(label);
+        nfcContainer.setVisibility(View.GONE);
+        platenumberContainer.setVisibility(View.VISIBLE);
     }
 }
 
