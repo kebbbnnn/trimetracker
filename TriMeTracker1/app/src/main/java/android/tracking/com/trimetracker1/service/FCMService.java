@@ -10,7 +10,6 @@ import android.support.v7.app.NotificationCompat;
 import android.tracking.com.trimetracker1.R;
 import android.tracking.com.trimetracker1.TrackActivity;
 import android.util.Log;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -27,15 +26,16 @@ public class FCMService extends FirebaseMessagingService {
         /* There are two types of messages data messages and notification messages. Data messages are handled here in onMessageReceived whether the app is in the foreground or background. Data messages are the type traditionally used with GCM. Notification messages are only received here in onMessageReceived when the app is in the foreground. When the app is in the background an automatically generated notification is displayed. */
 
         String notificationTitle = null, notificationBody = null;
-        String dataTitle = null, dataMessage = null, senderId = null, senderName = null;
+        String event = null, receiverId = null, senderId = null, senderName = null, plateNumber = null;
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "Message data payload: " + remoteMessage.getData().get("message"));
-            dataTitle = remoteMessage.getData().get("title");
-            dataMessage = remoteMessage.getData().get("message");
+            Log.d(TAG, "Message data payload: " + remoteMessage.getData().get("receiverId"));
+            event = remoteMessage.getData().get("event");
+            receiverId = remoteMessage.getData().get("receiverId");
             senderId = remoteMessage.getData().get("senderId");
             senderName = remoteMessage.getData().get("senderName");
+            plateNumber = remoteMessage.getData().get("plateNumber");
         }
 
         // Check if message contains a notification payload.
@@ -46,10 +46,10 @@ public class FCMService extends FirebaseMessagingService {
         }
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser != null && !isEmpty(dataMessage) && currentUser.getUid().equals(dataMessage)) {
+        if (currentUser != null && !isEmpty(receiverId) && currentUser.getUid().equals(receiverId)) {
             // Also if you intend on generating your own notifications as a result of a received FCM
             // message, here is where that should be initiated. See sendNotification method below.
-            sendNotification(notificationTitle, notificationBody, dataTitle, dataMessage, senderId, senderName);
+            sendNotification(notificationTitle, notificationBody, event, receiverId, senderId, senderName, plateNumber);
         }
     }
 
@@ -57,12 +57,13 @@ public class FCMService extends FirebaseMessagingService {
      * //     * Create and show a simple notification containing the received FCM message.
      * //
      */
-    private void sendNotification(String notificationTitle, String notificationBody, String dataTitle, String dataMessage, String senderId, String senderName) {
+    private void sendNotification(String notificationTitle, String notificationBody, String event, String receiverId, String senderId, String senderName, String plateNumber) {
         Intent intent = new Intent(this, TrackActivity.class);
-        intent.putExtra("title", dataTitle);
-        intent.putExtra("message", dataMessage);
+        intent.putExtra("event", event);
+        intent.putExtra("receiverId", receiverId);
         intent.putExtra("senderId", senderId);
         intent.putExtra("senderName", senderName);
+        intent.putExtra("plateNumber", plateNumber);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);

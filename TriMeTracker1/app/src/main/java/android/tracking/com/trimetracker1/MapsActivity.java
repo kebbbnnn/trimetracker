@@ -45,6 +45,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private long lastLocUpdate = 0;
     private FirebaseUser currentUser;
     private DatabaseReference msgRef;
+    private String sessionId;
 
     public static void setVehicle(Vehicle _vehicle) {
         vehicle = _vehicle;
@@ -61,7 +62,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         list.setAdapter(adapter);
         ItemClickSupport.addTo(list).setOnItemClickListener(this);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-
+        sessionId = Session.getInstance().sessionId();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -73,7 +74,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onItemClick(RecyclerView parent, View view, int position, long id) {
         slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         UserData user = adapter.users.get(position);
-        Message message = new Message("event-location-share", currentUser.getDisplayName(), currentUser.getUid(), user.id);
+        Message message = new Message(sessionId, "event-location-share", currentUser.getDisplayName(), currentUser.getUid(), user.id, vehicle.platenumber);
         msgRef.push().setValue(message);
     }
 
@@ -134,7 +135,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void saveLocationToDb(double lat, double lng) {
         DatabaseReference locRef = FirebaseDatabase.getInstance().getReference().child("locations").push();
-        LocationData locData = new LocationData(currentUser.getUid(), lat, lng);
+        LocationData locData = new LocationData(sessionId, currentUser.getUid(), lat, lng);
         locRef.setValue(locData, (error, databaseReference) -> {
             if (error != null) {
                 Log.e("test", "Error saving location to database, Error: " + error.getMessage() + ", Details: " + error.getDetails() + ", Code: " + error.getCode());

@@ -1,6 +1,5 @@
 package android.tracking.com.trimetracker1;
 
-import android.content.ClipData;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -16,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-
 import com.google.firebase.auth.FirebaseAuth;
 
 public class HomePageNav extends AppCompatActivity
@@ -115,10 +113,8 @@ public class HomePageNav extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_history) {
-
-            
+            startActivity(new Intent(this, HistoryActivity.class));
         } else if (id == R.id.nav_gallery) {
-
 
         } else if (id == R.id.nav_slideshow) {
 

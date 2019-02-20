@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentActivity;
 import android.tracking.com.trimetracker1.data.LocationData;
 import android.util.Log;
 import android.widget.TextView;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -14,11 +13,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.*;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -30,7 +25,7 @@ public class TrackActivity extends FragmentActivity implements OnMapReadyCallbac
     private Marker marker;
     private DatabaseReference locRef;
     private ValueEventListener locationListener;
-    private String senderId = null, senderName = null;
+    private String senderId = null, senderName = null, plateNumber = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +39,9 @@ public class TrackActivity extends FragmentActivity implements OnMapReadyCallbac
                 }
                 if (key.equals("senderName")) {
                     senderName = (String) getIntent().getExtras().get(key);
+                }
+                if (key.equals("plateNumber")) {
+                    plateNumber = (String) getIntent().getExtras().get(key);
                 }
             }
         }
@@ -76,7 +74,8 @@ public class TrackActivity extends FragmentActivity implements OnMapReadyCallbac
                                     marker.remove();
                                 }
                                 LatLng latLng = new LatLng(data.lat, data.lng);
-                                marker = googleMap.addMarker(new MarkerOptions().position(latLng).title("Hello World!"));
+                                String details = "platenumer: " + plateNumber;
+                                marker = googleMap.addMarker(new MarkerOptions().position(latLng).title(details));
                                 googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                                 googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
                             }
@@ -95,6 +94,8 @@ public class TrackActivity extends FragmentActivity implements OnMapReadyCallbac
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        locRef.removeEventListener(locationListener);
+        if (locRef != null) {
+            locRef.removeEventListener(locationListener);
+        }
     }
 }

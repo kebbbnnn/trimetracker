@@ -20,10 +20,11 @@ exports.pushNotification = functions.database.ref('/messages/{pushId}').onWrite(
                 sound: "default"
             },
             data: {
-                title: valueObject.title,
-                message: valueObject.message,
+                event: valueObject.event,
+                receiverId: valueObject.receiverId,
                 senderId : valueObject.senderId,
-                senderName : valueObject.senderName
+                senderName : valueObject.senderName,
+                plateNumber : valueObject.plateNumber
             }
         };
     
