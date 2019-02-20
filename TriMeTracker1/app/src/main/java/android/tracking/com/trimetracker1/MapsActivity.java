@@ -15,6 +15,7 @@ import android.tracking.com.trimetracker1.adapter.ContactsListAdapter;
 import android.tracking.com.trimetracker1.data.LocationData;
 import android.tracking.com.trimetracker1.data.Message;
 import android.tracking.com.trimetracker1.data.UserData;
+import android.tracking.com.trimetracker1.data.Vehicle;
 import android.tracking.com.trimetracker1.support.ItemClickSupport;
 import android.util.Log;
 import android.view.View;
@@ -31,9 +32,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import static android.text.TextUtils.isEmpty;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, ItemClickSupport.OnItemClickListener {
     private static final long LOCATION_UPDATE_INTERVAL = 30000L;
-    public static String nfcTag;
+    public static Vehicle vehicle;
     private SlidingUpPanelLayout slidingLayout;
     private ContactsListAdapter adapter;
     private RecyclerView list;
@@ -43,8 +46,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private FirebaseUser currentUser;
     private DatabaseReference msgRef;
 
-    public static void setNFCTag(String _nfcTag) {
-        nfcTag = _nfcTag;
+    public static void setVehicle(Vehicle _vehicle) {
+        vehicle = _vehicle;
     }
 
     @Override
@@ -112,7 +115,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 marker.remove();
             }
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            marker = mMap.addMarker(new MarkerOptions().position(latLng).title("Hello World!"));
+            String details = "platenumer: " + vehicle.platenumber;
+            if (!isEmpty(vehicle.ownername)) {
+                details += ", owner: " + vehicle.ownername;
+            }
+            marker = mMap.addMarker(new MarkerOptions().position(latLng).title(details));
             mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
