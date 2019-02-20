@@ -59,7 +59,7 @@ public class HomePageNav extends AppCompatActivity
         starttripcard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(HomePageNav.this, MapsActivity.class);
+                Intent intent = new Intent(HomePageNav.this, StartTrip.class);
                 startActivity(intent);
             }
         });
