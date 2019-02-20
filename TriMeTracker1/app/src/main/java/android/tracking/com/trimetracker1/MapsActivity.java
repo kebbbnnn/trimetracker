@@ -18,7 +18,6 @@ import android.tracking.com.trimetracker1.data.UserData;
 import android.tracking.com.trimetracker1.support.ItemClickSupport;
 import android.util.Log;
 import android.view.View;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -34,6 +33,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, ItemClickSupport.OnItemClickListener {
     private static final long LOCATION_UPDATE_INTERVAL = 30000L;
+    public static String nfcTag;
     private SlidingUpPanelLayout slidingLayout;
     private ContactsListAdapter adapter;
     private RecyclerView list;
@@ -42,6 +42,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private long lastLocUpdate = 0;
     private FirebaseUser currentUser;
     private DatabaseReference msgRef;
+
+    public static void setNFCTag(String _nfcTag) {
+        nfcTag = _nfcTag;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
