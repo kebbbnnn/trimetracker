@@ -16,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.google.firebase.database.*;
 
+import static android.text.TextUtils.isEmpty;
+
 public class StartTrip extends AppCompatActivity {
 
     private static final String TAG = "StartTrip";
@@ -86,25 +88,33 @@ public class StartTrip extends AppCompatActivity {
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())
                 || NfcAdapter.ACTION_TECH_DISCOVERED.equals(intent.getAction()) || NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
             Tag iTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            String nfc_code = TagReader.readTag(iTag, intent).substring(3);
-            DatabaseReference vehicleRef = FirebaseDatabase.getInstance().getReference().child("vehicleinfo");
-            vehicleRef.child(nfc_code).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    Vehicle data = snapshot.getValue(Vehicle.class);
-                    mTextView.setText("platenumber: " + data.platenumber + "\n" + "owner: " + data.ownername);
-                    MapsActivity.setVehicle(data);
-                    getWindow().getDecorView().postDelayed(() -> {
-                        startActivity(new Intent(StartTrip.this, MapsActivity.class));
-                        finish();
-                    }, 3000);
-                }
+            if (iTag != null) {
+                String nfc_code = TagReader.readTag(iTag, intent).substring(3);
+                if (!isEmpty(nfc_code)) {
+                    DatabaseReference vehicleRef = FirebaseDatabase.getInstance().getReference().child("vehicleinfo");
+                    vehicleRef.child(nfc_code).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            Vehicle data = snapshot.getValue(Vehicle.class);
+                            mTextView.setText("platenumber: " + data.platenumber + "\n" + "owner: " + data.ownername);
+                            MapsActivity.setVehicle(data);
+                            getWindow().getDecorView().postDelayed(() -> {
+                                startActivity(new Intent(StartTrip.this, MapsActivity.class));
+                                finish();
+                            }, 3000);
+                        }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
+                        }
+                    });
+                } else {
+                    Toast.makeText(this, "unrecognized nfc tag", Toast.LENGTH_SHORT).show();
                 }
-            });
+            } else {
+                Toast.makeText(this, "unrecognized nfc tag", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }
