@@ -74,7 +74,7 @@ public class TrackActivity extends FragmentActivity implements OnMapReadyCallbac
                                     marker.remove();
                                 }
                                 LatLng latLng = new LatLng(data.lat, data.lng);
-                                String details = "platenumer: " + plateNumber;
+                                String details = "platenumber: " + plateNumber;
                                 marker = googleMap.addMarker(new MarkerOptions().position(latLng).title(details));
                                 googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                                 googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));

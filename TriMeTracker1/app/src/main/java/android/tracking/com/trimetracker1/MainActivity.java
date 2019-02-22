@@ -40,10 +40,10 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseUser user = firebaseAuth.getCurrentUser();
         if (user != null) {
-            finish();
             startActivity(new Intent(MainActivity.this, HomePageNav.class));
+            finish();
+            return;
         }
-
 
         Login.setOnClickListener(v -> validate(Email.getText().toString(), Password.getText().toString()));
 

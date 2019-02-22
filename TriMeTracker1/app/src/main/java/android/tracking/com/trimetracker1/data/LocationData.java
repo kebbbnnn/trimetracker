@@ -5,7 +5,7 @@ import com.google.firebase.database.Exclude;
 public class LocationData {
     @Exclude
     public long id;
-    public String session_id;
+    public String sessionId;
     public String userId;
     public double lat;
     public double lng;
@@ -16,16 +16,16 @@ public class LocationData {
     }
     //@formatter:on
 
-    public LocationData(String session_id, String userId, double lat, double lng, long timestamp) {
-        this.session_id = session_id;
+    public LocationData(String sessionId, String userId, double lat, double lng, long timestamp) {
+        this.sessionId = sessionId;
         this.userId = userId;
         this.lat = lat;
         this.lng = lng;
         this.timestamp = timestamp;
     }
 
-    public LocationData(String session_id, String userId, double lat, double lng) {
-        this.session_id = session_id;
+    public LocationData(String sessionId, String userId, double lat, double lng) {
+        this.sessionId = sessionId;
         this.userId = userId;
         this.lat = lat;
         this.lng = lng;

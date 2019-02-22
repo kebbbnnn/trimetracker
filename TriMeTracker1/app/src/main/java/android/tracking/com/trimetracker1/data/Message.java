@@ -1,24 +1,24 @@
 package android.tracking.com.trimetracker1.data;
 
 public class Message {
-    private String session_id, event, sender_name, sender_id, receiver_id, plate_number;
+    private String sessionId, event, senderName, senderId, receiverId, plateNumber;
 
     //@formatter:off
     public Message() {
     }
     //@formatter:on
 
-    public Message(String session_id, String event, String sender_name, String sender_id, String receiver_id, String plate_number) {
-        this.session_id = session_id;
+    public Message(String sessionId, String event, String senderName, String senderId, String receiverId, String plateNumber) {
+        this.sessionId = sessionId;
         this.event = event;
-        this.sender_name = sender_name;
-        this.sender_id = sender_id;
-        this.receiver_id = receiver_id;
-        this.plate_number = plate_number;
+        this.senderName = senderName;
+        this.senderId = senderId;
+        this.receiverId = receiverId;
+        this.plateNumber = plateNumber;
     }
 
     public String getSessionId() {
-        return session_id;
+        return sessionId;
     }
 
     public String getEvent() {
@@ -26,18 +26,18 @@ public class Message {
     }
 
     public String getSenderName() {
-        return sender_name;
+        return senderName;
     }
 
     public String getSenderId() {
-        return sender_id;
+        return senderId;
     }
 
     public String getReceiverId() {
-        return receiver_id;
+        return receiverId;
     }
 
     public String getPlateNumber() {
-        return plate_number;
+        return plateNumber;
     }
 }
