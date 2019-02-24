@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -20,9 +22,10 @@ public class MainActivity extends AppCompatActivity {
     private EditText Email;
     private EditText Password;
     private Button Login;
-    private TextView userRegister;
+    private TextView userRegister, reset;
     private FirebaseAuth firebaseAuth;
     private ProgressDialog progressDialog;
+
 
 
     @Override
@@ -34,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         Password = findViewById(R.id.userPassword);
         Login = findViewById(R.id.btnUserLogin);
         userRegister = findViewById(R.id.tvRegister);
+        reset = findViewById(R.id.tvForgotPassword);
 
         firebaseAuth = FirebaseAuth.getInstance();
         progressDialog = new ProgressDialog(this);
@@ -49,9 +53,10 @@ public class MainActivity extends AppCompatActivity {
 
         userRegister.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, RegistrationActivity.class)));
 
-        btnwelcome = findViewById(R.id.btnWelcome);
-        btnwelcome.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, HomePageNav.class);
+
+
+        reset.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, PasswordActivity.class);
             startActivity(intent);
         });
     }
@@ -63,12 +68,30 @@ public class MainActivity extends AppCompatActivity {
         firebaseAuth.signInWithEmailAndPassword(userEmail, userPassword).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 progressDialog.dismiss();
-                Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(MainActivity.this, HomePageNav.class));
+//                Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                checkEmailVerification();
+//                startActivity(new Intent(MainActivity.this, HomePageNav.class));
             } else {
                 progressDialog.dismiss();
                 Toast.makeText(MainActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
             }
         });
     }
+
+
+    private void checkEmailVerification(){
+        FirebaseUser firebaseUser = firebaseAuth.getInstance().getCurrentUser();
+        Boolean emailflag = firebaseUser.isEmailVerified();
+
+        startActivity(new Intent(MainActivity.this, HomePageNav.class));
+
+//        if(emailflag){
+//            finish();
+//            startActivity(new Intent(MainActivity.this, SecondActivity.class));
+//        }else{
+//            Toast.makeText(this, "Verify your email", Toast.LENGTH_SHORT).show();
+//            firebaseAuth.signOut();
+//        }
+    }
+
 }
