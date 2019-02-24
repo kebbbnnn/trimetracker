@@ -1,15 +1,12 @@
 package android.tracking.com.trimetracker1.adapter;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.tracking.com.trimetracker1.R;
 import android.tracking.com.trimetracker1.Session;
 import android.tracking.com.trimetracker1.data.LocationData;
 import android.tracking.com.trimetracker1.data.LocationList;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -123,11 +120,4 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         return locationDataList != null ? locationDataList.size() : 0;
     }
 
-    public static void runOnUIThread(Runnable runnable) {
-        new Handler(Looper.getMainLooper()).post(runnable);
-    }
-
-    public static void runOnBackgroundThread(Runnable runnable) {
-        new Thread(runnable).start();
-    }
 }

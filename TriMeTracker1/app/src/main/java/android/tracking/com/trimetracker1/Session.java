@@ -1,7 +1,9 @@
 package android.tracking.com.trimetracker1;
 
 import android.app.Application;
+import android.content.Context;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.gson.Gson;
 
 import java.util.UUID;
 
@@ -11,7 +13,9 @@ public class Session extends Application {
 
     private static Session instance = null;
 
+    private Preferences preferences;
     private String uuid;
+    private Gson gson;
 
     @Override
     public void onCreate() {
@@ -32,4 +36,20 @@ public class Session extends Application {
         }
         return uuid;
     }
+
+    public Gson gson() {
+        if (gson == null) {
+            gson = new Gson();
+        }
+        return gson;
+    }
+
+    public Preferences getPreferences(Context context) {
+        if (preferences == null) {
+            preferences = Preferences.getInstance(context);
+        }
+        return preferences;
+    }
+
+
 }

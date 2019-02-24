@@ -14,15 +14,22 @@ import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.*;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static android.text.TextUtils.isEmpty;
+import static android.tracking.com.trimetracker1.Utils.runOnBackgroundThread;
+import static android.tracking.com.trimetracker1.Utils.runOnUIThread;
+
 public class HistoryActivity extends AppCompatActivity {
 
     private List<LocationList> locationDataList = new ArrayList<>();
+    private List<LocationList> locationDataListCopy = new ArrayList<>();
     private HistoryAdapter adapter = new HistoryAdapter();
     private RecyclerView recyclerView;
     private int data_size = 0, counter = 0;
@@ -43,6 +50,17 @@ public class HistoryActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(R.string.history);
         }
+
+        runOnBackgroundThread(() -> {
+            String json = Session.getInstance().getPreferences(this).getJson("history");
+            if (!isEmpty(json)) {
+                //@formatter:off
+                Type type = new TypeToken<List<LocationList>>() {}.getType();
+                //@formatter:on
+                locationDataList = Session.getInstance().gson().fromJson(json, type);
+                runOnUIThread(() -> adapter.setLocationDataList(locationDataList));
+            }
+        });
 
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference().child("messages");
@@ -70,7 +88,7 @@ public class HistoryActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            onBackPressed();
+            finish();
             return true;
         } else {
             return super.onOptionsItemSelected(item);
@@ -81,20 +99,22 @@ public class HistoryActivity extends AppCompatActivity {
 
         @Override
         public void onDataChange(@NonNull DataSnapshot snapshot) {
-            //@formatter:off
-            GenericTypeIndicator<HashMap<String, Message>> objectsGTypeInd = new GenericTypeIndicator<HashMap<String, Message>>() {};
-            //@formatter:on
-            Map<String, Message> map = snapshot.getValue(objectsGTypeInd);
-            ArrayList<Message> list = new ArrayList<>(map.values());
-            if (!list.isEmpty()) {
-                data_size = list.size();
-                for (Message msg : list) {
-                    DatabaseReference locRef = FirebaseDatabase.getInstance().getReference().child("locations");
-                    locRef.orderByChild("sessionId")
-                            .equalTo(msg.getSessionId())
-                            .addListenerForSingleValueEvent(locListener.sender(msg.getSenderName()));
+            runOnBackgroundThread(() -> {
+                //@formatter:off
+                GenericTypeIndicator<HashMap<String, Message>> objectsGTypeInd = new GenericTypeIndicator<HashMap<String, Message>>() {};
+                //@formatter:on
+                Map<String, Message> map = snapshot.getValue(objectsGTypeInd);
+                ArrayList<Message> list = new ArrayList<>(map.values());
+                if (!list.isEmpty()) {
+                    data_size = list.size();
+                    for (Message msg : list) {
+                        DatabaseReference locRef = FirebaseDatabase.getInstance().getReference().child("locations");
+                        locRef.orderByChild("sessionId")
+                                .equalTo(msg.getSessionId())
+                                .addListenerForSingleValueEvent(locListener.sender(msg.getSenderName()));
+                    }
                 }
-            }
+            });
         }
 
         @Override
@@ -113,23 +133,33 @@ public class HistoryActivity extends AppCompatActivity {
 
         @Override
         public void onDataChange(@NonNull DataSnapshot snapshot) {
-            try {
-                //@formatter:off
-                GenericTypeIndicator<HashMap<String, LocationData>> objectsGTypeInd = new GenericTypeIndicator<HashMap<String, LocationData>>() {};
-                //@formatter:on
-                Map<String, LocationData> map = snapshot.getValue(objectsGTypeInd);
-                ArrayList<LocationData> list = new ArrayList<>(map.values());
-                if (!list.isEmpty()) {
-                    locationDataList.add(new LocationList(this.sender, list));
-                    counter++;
-                    if (data_size == counter) {
-                        adapter.setLocationDataList(locationDataList);
+            runOnBackgroundThread(() -> {
+                try {
+                    //@formatter:off
+                    GenericTypeIndicator<HashMap<String, LocationData>> objectsGTypeInd = new GenericTypeIndicator<HashMap<String, LocationData>>() {};
+                    //@formatter:on
+                    Map<String, LocationData> map = snapshot.getValue(objectsGTypeInd);
+                    ArrayList<LocationData> list = new ArrayList<>(map.values());
+                    if (!list.isEmpty()) {
+                        locationDataListCopy.add(new LocationList(this.sender, list));
+                        counter++;
+                        if (data_size == counter) {
+                            locationDataList.clear();
+                            locationDataList.addAll(locationDataListCopy);
+                            locationDataListCopy.clear();
+                            //@formatter:off
+                            Type type = new TypeToken<List<LocationList>>() {}.getType();
+                            //@formatter:on
+                            String json = Session.getInstance().gson().toJson(locationDataList, type);
+                            Session.getInstance().getPreferences(HistoryActivity.this).saveJson("history", json);
+                            runOnUIThread(() -> adapter.setLocationDataList(locationDataList));
+                        }
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-            }
+            });
         }
 
         @Override
