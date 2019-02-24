@@ -35,7 +35,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             mapView = itemView.findViewById(R.id.map);
             mapView.onCreate(null);
             mapView.getMapAsync(this);
-            textSender = itemView.findViewById(R.id.textSenderName);
+            textSender = itemView.findViewById(R.id.textLabel);
         }
 
         @Override

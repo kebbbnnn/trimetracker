@@ -74,7 +74,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onItemClick(RecyclerView parent, View view, int position, long id) {
         slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         UserData user = adapter.users.get(position);
-        Message message = new Message(sessionId, "event-location-share", currentUser.getDisplayName(), currentUser.getUid(), user.id, vehicle.platenumber);
+        Message message = new Message(sessionId, "event-location-share", currentUser.getDisplayName(), currentUser.getUid(), user.id, vehicle.platenumber, System.currentTimeMillis());
         msgRef.push().setValue(message);
     }
 

@@ -61,7 +61,7 @@ public class HomePageNav extends AppCompatActivity
         });
 
         trackpassengercard.setOnClickListener(v -> {
-            Intent intent = new Intent(HomePageNav.this, TrackActivity.class);
+            Intent intent = new Intent(HomePageNav.this, SharedLocationActivity.class);
             startActivity(intent);
         });
 

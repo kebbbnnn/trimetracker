@@ -31,7 +31,7 @@ public class TrackActivity extends FragmentActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_track);
-        textSenderName = findViewById(R.id.textSenderName);
+        textSenderName = findViewById(R.id.textLabel);
         if (getIntent().getExtras() != null) {
             for (String key : getIntent().getExtras().keySet()) {
                 if (key.equals("senderId")) {
