@@ -10,6 +10,7 @@ import android.tracking.com.trimetracker1.data.LocationData;
 import android.tracking.com.trimetracker1.data.LocationList;
 import android.tracking.com.trimetracker1.data.Message;
 import android.view.MenuItem;
+import android.view.View;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,6 +33,7 @@ public class HistoryActivity extends AppCompatActivity {
     private List<LocationList> locationDataListCopy = new ArrayList<>();
     private HistoryAdapter adapter = new HistoryAdapter();
     private RecyclerView recyclerView;
+    private View viewEmpty;
     private int data_size = 0, counter = 0;
 
     private SessionDataListener eventListener = new SessionDataListener();
@@ -45,6 +47,7 @@ public class HistoryActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
         recyclerView.setRecyclerListener(mRecycleListener);
+        viewEmpty = findViewById(R.id.textEmpty);
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -104,15 +107,20 @@ public class HistoryActivity extends AppCompatActivity {
                 GenericTypeIndicator<HashMap<String, Message>> objectsGTypeInd = new GenericTypeIndicator<HashMap<String, Message>>() {};
                 //@formatter:on
                 Map<String, Message> map = snapshot.getValue(objectsGTypeInd);
-                ArrayList<Message> list = new ArrayList<>(map.values());
-                if (!list.isEmpty()) {
-                    data_size = list.size();
-                    for (Message msg : list) {
-                        DatabaseReference locRef = FirebaseDatabase.getInstance().getReference().child("locations");
-                        locRef.orderByChild("sessionId")
-                                .equalTo(msg.getSessionId())
-                                .addListenerForSingleValueEvent(locListener.sender(msg.getSenderName()));
+                if (map != null) {
+                    runOnUIThread(HistoryActivity.this::hideEmpty);
+                    ArrayList<Message> list = new ArrayList<>(map.values());
+                    if (!list.isEmpty()) {
+                        data_size = list.size();
+                        for (Message msg : list) {
+                            DatabaseReference locRef = FirebaseDatabase.getInstance().getReference().child("locations");
+                            locRef.orderByChild("sessionId")
+                                    .equalTo(msg.getSessionId())
+                                    .addListenerForSingleValueEvent(locListener.sender(msg.getSenderName()));
+                        }
                     }
+                } else {
+                    runOnUIThread(HistoryActivity.this::showEmpty);
                 }
             });
         }
@@ -166,5 +174,15 @@ public class HistoryActivity extends AppCompatActivity {
         public void onCancelled(@NonNull DatabaseError databaseError) {
 
         }
+    }
+
+    private void showEmpty() {
+        viewEmpty.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
+    }
+
+    private void hideEmpty() {
+        viewEmpty.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
     }
 }
