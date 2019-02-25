@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static android.text.TextUtils.isEmpty;
 import static android.tracking.com.trimetracker1.Utils.runOnBackgroundThread;
@@ -37,7 +38,6 @@ public class HistoryActivity extends AppCompatActivity {
     private int data_size = 0, counter = 0;
 
     private SessionDataListener eventListener = new SessionDataListener();
-    private LocationDataListener locListener = new LocationDataListener();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +116,7 @@ public class HistoryActivity extends AppCompatActivity {
                             DatabaseReference locRef = FirebaseDatabase.getInstance().getReference().child("locations");
                             locRef.orderByChild("sessionId")
                                     .equalTo(msg.getSessionId())
-                                    .addListenerForSingleValueEvent(locListener.sender(msg.getSenderName()));
+                                    .addListenerForSingleValueEvent(new LocationDataListener().sender(msg.getSenderName()));
                         }
                     }
                 } else {
@@ -132,10 +132,10 @@ public class HistoryActivity extends AppCompatActivity {
     }
 
     private class LocationDataListener implements ValueEventListener {
-        private String sender;
+        private AtomicReference<String> sender = new AtomicReference<>();
 
         LocationDataListener sender(String sender) {
-            this.sender = sender;
+            this.sender.set(sender);
             return this;
         }
 
@@ -149,7 +149,7 @@ public class HistoryActivity extends AppCompatActivity {
                     Map<String, LocationData> map = snapshot.getValue(objectsGTypeInd);
                     ArrayList<LocationData> list = new ArrayList<>(map.values());
                     if (!list.isEmpty()) {
-                        locationDataListCopy.add(new LocationList(this.sender, list));
+                        locationDataListCopy.add(new LocationList(this.sender.get(), list));
                         counter++;
                         if (data_size == counter) {
                             locationDataList.clear();

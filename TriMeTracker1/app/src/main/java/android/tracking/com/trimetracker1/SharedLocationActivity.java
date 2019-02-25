@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.tracking.com.trimetracker1.adapter.SharedLocationAdapter;
 import android.tracking.com.trimetracker1.data.Message;
 import android.tracking.com.trimetracker1.support.ItemClickSupport;
+import android.view.MenuItem;
 import android.view.View;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.*;
@@ -48,6 +49,17 @@ public class SharedLocationActivity extends AppCompatActivity implements ItemCli
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference().child("messages");
         eventRef.orderByChild("receiverId").equalTo(currentUserId).addListenerForSingleValueEvent(eventListener);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            finish();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
