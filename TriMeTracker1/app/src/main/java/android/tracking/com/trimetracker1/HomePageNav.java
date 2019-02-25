@@ -111,7 +111,7 @@ public class HomePageNav extends AppCompatActivity
         if (id == R.id.nav_history) {
             startActivity(new Intent(this, HistoryActivity.class));
         } else if (id == R.id.nav_contacts) {
-
+            startActivity(new Intent(this, AddContactsActivity.class));
         } else if (id == R.id.nav_mytrip) {
 
         } else if (id == R.id.nav_logout) {

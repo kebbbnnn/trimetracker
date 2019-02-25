@@ -15,16 +15,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ContactsListAdapter extends RecyclerView.Adapter<ContactsListAdapter.ViewHolder> implements ValueEventListener {
+public class AddContactsAdapter extends RecyclerView.Adapter<AddContactsAdapter.ViewHolder> implements ValueEventListener {
 
     public List<UserData> users = new ArrayList<>();
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         TextView userName;
+        public View check;
+        public boolean added = false;
 
         public ViewHolder(View itemView) {
             super(itemView);
             userName = itemView.findViewById(R.id.userName);
+            check = itemView.findViewById(R.id.imgCheck);
         }
     }
 
@@ -55,21 +58,22 @@ public class ContactsListAdapter extends RecyclerView.Adapter<ContactsListAdapte
 
     }
 
-    public ContactsListAdapter() {
+    public AddContactsAdapter() {
         super();
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("users");
         usersRef.addListenerForSingleValueEvent(this);
     }
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View root = inflater.inflate(R.layout.item_users, parent, false);
+        View root = inflater.inflate(R.layout.item_add_contact, parent, false);
         return new ViewHolder(root);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         UserData user = users.get(position);
         holder.userName.setText(user.name);
     }
@@ -77,5 +81,9 @@ public class ContactsListAdapter extends RecyclerView.Adapter<ContactsListAdapte
     @Override
     public int getItemCount() {
         return users.size();
+    }
+
+    public UserData getUser(int position) {
+        return users.get(position);
     }
 }

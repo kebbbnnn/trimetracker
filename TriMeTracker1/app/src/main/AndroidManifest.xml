@@ -24,6 +24,8 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".AddContactsActivity">
+        </activity>
         <activity android:name=".SharedLocationActivity">
         </activity>
         <activity android:name=".MainActivity">

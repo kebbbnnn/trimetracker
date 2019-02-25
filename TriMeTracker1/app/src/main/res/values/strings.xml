@@ -28,5 +28,6 @@
     <string name="no_available_history_data">No available history data</string>
     <string name="no_available_shared_location">No available shared location</string>
     <string name="end_session">End Session</string>
+    <string name="add_contacts">Add Contacts</string>
 
 </resources>

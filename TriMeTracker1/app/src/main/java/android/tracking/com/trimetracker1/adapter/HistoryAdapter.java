@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.tracking.com.trimetracker1.R;
 import android.tracking.com.trimetracker1.Session;
+import android.tracking.com.trimetracker1.Utils;
 import android.tracking.com.trimetracker1.data.LocationData;
 import android.tracking.com.trimetracker1.data.LocationList;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.google.android.gms.maps.*;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -29,6 +31,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         private MapView mapView;
         public GoogleMap googleMap;
         private TextView textSender, textPlateNum;
+        private BitmapDescriptor dotIcon;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -37,6 +40,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             mapView.getMapAsync(this);
             textSender = itemView.findViewById(R.id.textLabel);
             textPlateNum = itemView.findViewById(R.id.textPlateNum);
+            dotIcon = Utils.bitmapDescriptorFromVector(itemView.getContext(), R.drawable.ic_pin_dot);
         }
 
         @Override
@@ -66,6 +70,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
                 List<LatLng> path = new ArrayList<>();
                 for (LocationData loc : data.data) {
                     LatLng latLng = new LatLng(loc.lat, loc.lng);
+                    //this.googleMap.addMarker(new MarkerOptions().position(latLng).icon(dotIcon));
                     this.googleMap.addMarker(new MarkerOptions().position(latLng));
                     path.add(latLng);
                 }
