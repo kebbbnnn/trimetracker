@@ -14,6 +14,7 @@ public class Session extends Application {
     private static Session instance = null;
 
     private Preferences preferences;
+    private boolean onGoingSession = false;
     private String uuid;
     private Gson gson;
 
@@ -37,11 +38,24 @@ public class Session extends Application {
         return uuid;
     }
 
+    public void endSession() {
+        uuid = null;
+        setOnGoingSession(false);
+    }
+
     public Gson gson() {
         if (gson == null) {
             gson = new Gson();
         }
         return gson;
+    }
+
+    public boolean isOnGoingSession() {
+        return onGoingSession;
+    }
+
+    public void setOnGoingSession(boolean onGoingSession) {
+        this.onGoingSession = onGoingSession;
     }
 
     public Preferences getPreferences(Context context) {

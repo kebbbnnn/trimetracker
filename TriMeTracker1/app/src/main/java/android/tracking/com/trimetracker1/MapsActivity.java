@@ -19,6 +19,7 @@ import android.tracking.com.trimetracker1.data.Vehicle;
 import android.tracking.com.trimetracker1.support.ItemClickSupport;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -40,6 +41,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private SlidingUpPanelLayout slidingLayout;
     private ContactsListAdapter adapter;
     private RecyclerView list;
+    private Button btnEndSession;
     private GoogleMap mMap;
     private Marker marker;
     private long lastLocUpdate = 0;
@@ -56,13 +58,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         slidingLayout = findViewById(R.id.sliding_layout);
+        btnEndSession = findViewById(R.id.buttonStop);
         list = findViewById(R.id.list);
         list.setLayoutManager(new LinearLayoutManager(this));
         adapter = new ContactsListAdapter();
         list.setAdapter(adapter);
+
         ItemClickSupport.addTo(list).setOnItemClickListener(this);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         sessionId = Session.getInstance().sessionId();
+
+        btnEndSession.setVisibility(Session.getInstance().isOnGoingSession() ? View.VISIBLE : View.GONE);
+
+        btnEndSession.setOnClickListener(v -> {
+            Session.getInstance().endSession();
+            finish();
+        });
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -72,6 +84,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onItemClick(RecyclerView parent, View view, int position, long id) {
+        Session.getInstance().setOnGoingSession(true);
+        btnEndSession.setVisibility(View.VISIBLE);
         slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         UserData user = adapter.users.get(position);
         Message message = new Message(sessionId, "event-location-share", currentUser.getDisplayName(), currentUser.getUid(), user.id, vehicle.platenumber, System.currentTimeMillis());
