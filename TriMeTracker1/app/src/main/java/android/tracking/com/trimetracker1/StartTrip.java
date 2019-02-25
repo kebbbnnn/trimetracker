@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.database.*;
 
 import static android.text.TextUtils.isEmpty;
@@ -47,14 +48,18 @@ public class StartTrip extends AppCompatActivity {
         if (mNfcAdapter == null) {
             openPlatenumberContainer("This device is not supported with NFC. Please type platenumber.");
             buttonNext.setOnClickListener(v -> {
-                String plateNumber = editPlatenumber.getText().toString();
-                Vehicle vehicle = new Vehicle();
-                vehicle.platenumber = plateNumber;
-                MapsActivity.setVehicle(vehicle);
-                getWindow().getDecorView().post(() -> {
-                    startActivity(new Intent(StartTrip.this, MapsActivity.class));
-                    finish();
-                });
+                try {
+                    String plateNumber = editPlatenumber.getText().toString();
+                    Vehicle vehicle = new Vehicle();
+                    vehicle.platenumber = plateNumber;
+                    MapsActivity.setVehicle(vehicle);
+                    getWindow().getDecorView().post(() -> {
+                        startActivity(new Intent(StartTrip.this, MapsActivity.class));
+                        finish();
+                    });
+                } catch (Exception e) {
+                    Crashlytics.logException(e);
+                }
             });
             return;
         }
