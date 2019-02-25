@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static android.text.TextUtils.isEmpty;
 import static android.tracking.com.trimetracker1.Utils.runOnBackgroundThread;
@@ -116,7 +115,7 @@ public class HistoryActivity extends AppCompatActivity {
                             DatabaseReference locRef = FirebaseDatabase.getInstance().getReference().child("locations");
                             locRef.orderByChild("sessionId")
                                     .equalTo(msg.getSessionId())
-                                    .addListenerForSingleValueEvent(new LocationDataListener().sender(msg.getSenderName()));
+                                    .addListenerForSingleValueEvent(new LocationDataListener(msg.getSenderName(), msg.getPlateNumber()));
                         }
                     }
                 } else {
@@ -132,11 +131,11 @@ public class HistoryActivity extends AppCompatActivity {
     }
 
     private class LocationDataListener implements ValueEventListener {
-        private AtomicReference<String> sender = new AtomicReference<>();
+        private String sender, plateNum;
 
-        LocationDataListener sender(String sender) {
-            this.sender.set(sender);
-            return this;
+        LocationDataListener(String sender, String plateNum) {
+            this.sender = sender;
+            this.plateNum = plateNum;
         }
 
         @Override
@@ -149,7 +148,7 @@ public class HistoryActivity extends AppCompatActivity {
                     Map<String, LocationData> map = snapshot.getValue(objectsGTypeInd);
                     ArrayList<LocationData> list = new ArrayList<>(map.values());
                     if (!list.isEmpty()) {
-                        locationDataListCopy.add(new LocationList(this.sender.get(), list));
+                        locationDataListCopy.add(new LocationList(this.sender, plateNum, list));
                         counter++;
                         if (data_size == counter) {
                             locationDataList.clear();

@@ -28,7 +28,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     public class ViewHolder extends RecyclerView.ViewHolder implements OnMapReadyCallback {
         private MapView mapView;
         public GoogleMap googleMap;
-        private TextView textSender;
+        private TextView textSender, textPlateNum;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -36,6 +36,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             mapView.onCreate(null);
             mapView.getMapAsync(this);
             textSender = itemView.findViewById(R.id.textLabel);
+            textPlateNum = itemView.findViewById(R.id.textPlateNum);
         }
 
         @Override
@@ -50,7 +51,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         private void bind(int position) {
             LocationList loc = locationDataList.get(position);
             mapView.setTag(loc);
-            textSender.setText(loc.senderName);
+            textSender.setText(loc.senderName.replace("\n", ""));
+            textPlateNum.setText(loc.plateNum.replace("\n", ""));
             setMapLocation();
         }
 
