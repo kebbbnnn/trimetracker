@@ -3,6 +3,7 @@ package android.tracking.com.trimetracker1.data;
 public class Message {
     private String sessionId, event, senderName, senderId, receiverId, plateNumber;
     private long createdAt;
+    private boolean live;
 
     //@formatter:off
     public Message() {
@@ -17,6 +18,10 @@ public class Message {
         this.receiverId = receiverId;
         this.plateNumber = plateNumber;
         this.createdAt = createdAt;
+    }
+
+    public void setLive(boolean live) {
+        this.live = live;
     }
 
     public String getSessionId() {
@@ -45,5 +50,9 @@ public class Message {
 
     public long getCreatedAt() {
         return createdAt;
+    }
+
+    public boolean isLive() {
+        return live;
     }
 }

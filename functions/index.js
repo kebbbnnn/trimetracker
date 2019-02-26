@@ -24,7 +24,8 @@ exports.pushNotification = functions.database.ref('/messages/{pushId}').onWrite(
                 receiverId: valueObject.receiverId,
                 senderId : valueObject.senderId,
                 senderName : valueObject.senderName,
-                plateNumber : valueObject.plateNumber
+                plateNumber : valueObject.plateNumber,
+                sessionId : valueObject.sessionId
             }
         };
     
@@ -34,7 +35,7 @@ exports.pushNotification = functions.database.ref('/messages/{pushId}').onWrite(
             timeToLive: 60 * 60 * 24 //24 hours
         };
     
-    return admin.messaging().sendToTopic("notifications", payload, options);
+    return admin.messaging().sendToTopic("notifications-{0}".format(valueObject.receiverId), payload, options);
     });
 
 String.prototype.format = function () {

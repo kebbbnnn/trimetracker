@@ -2,6 +2,7 @@ package android.tracking.com.trimetracker1;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -29,8 +30,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.*;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import static android.text.TextUtils.isEmpty;
@@ -48,6 +48,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private FirebaseUser currentUser;
     private DatabaseReference msgRef;
     private String sessionId;
+    private Message message;
 
     public static void setVehicle(Vehicle _vehicle) {
         vehicle = _vehicle;
@@ -70,16 +71,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         btnEndSession.setVisibility(Session.getInstance().isOnGoingSession() ? View.VISIBLE : View.GONE);
 
+        msgRef = FirebaseDatabase.getInstance().getReference("messages");
+
         btnEndSession.setOnClickListener(v -> {
-            Session.getInstance().endSession();
-            finish();
+            final ProgressDialog dialog = ProgressDialog.show(this, "", "Ending session. Please wait...", true);
+            msgRef.orderByChild("sessionId").equalTo(sessionId).addListenerForSingleValueEvent(new ValueEventListener() {
+
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot child : snapshot.getChildren()) {
+                        String key = child.getKey();
+                        msgRef.child(key).child("live").setValue(false).addOnSuccessListener(aVoid -> {
+                            dialog.dismiss();
+                            Session.getInstance().endSession();
+                            finish();
+                        });
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    dialog.dismiss();
+                }
+            });
+
         });
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
-
-        msgRef = FirebaseDatabase.getInstance().getReference("messages");
     }
 
     @Override
@@ -88,8 +108,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btnEndSession.setVisibility(View.VISIBLE);
         slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         UserData user = adapter.users.get(position);
-        Message message = new Message(sessionId, "event-location-share", currentUser.getDisplayName(), currentUser.getUid(), user.id, vehicle.platenumber, System.currentTimeMillis());
+        message = new Message(sessionId, "event-location-share", currentUser.getDisplayName(), currentUser.getUid(), user.id, vehicle.platenumber, System.currentTimeMillis());
+        message.setLive(true);
         msgRef.push().setValue(message);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (slidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED) {
+            slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     /**

@@ -25,7 +25,7 @@ public class TrackActivity extends FragmentActivity implements OnMapReadyCallbac
     private Marker marker;
     private DatabaseReference locRef;
     private ValueEventListener locationListener;
-    private String senderId = null, senderName = null, plateNumber = null;
+    private String senderId = null, senderName = null, plateNumber = null, sessionId = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +42,9 @@ public class TrackActivity extends FragmentActivity implements OnMapReadyCallbac
                 }
                 if (key.equals("plateNumber")) {
                     plateNumber = (String) getIntent().getExtras().get(key);
+                }
+                if (key.equals("sessionId")) {
+                    sessionId = (String) getIntent().getExtras().get(key);
                 }
             }
         }

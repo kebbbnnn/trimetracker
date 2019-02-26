@@ -52,6 +52,7 @@ public class StartTrip extends AppCompatActivity {
                     String plateNumber = editPlatenumber.getText().toString();
                     Vehicle vehicle = new Vehicle();
                     vehicle.platenumber = plateNumber;
+                    Session.getInstance().setVehicle(vehicle);
                     MapsActivity.setVehicle(vehicle);
                     getWindow().getDecorView().post(() -> {
                         startActivity(new Intent(StartTrip.this, MapsActivity.class));
@@ -117,6 +118,7 @@ public class StartTrip extends AppCompatActivity {
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             Vehicle data = snapshot.getValue(Vehicle.class);
                             mTextView.setText("platenumber: " + data.platenumber + "\n" + "owner: " + data.ownername);
+                            Session.getInstance().setVehicle(data);
                             MapsActivity.setVehicle(data);
                             getWindow().getDecorView().postDelayed(() -> {
                                 startActivity(new Intent(StartTrip.this, MapsActivity.class));

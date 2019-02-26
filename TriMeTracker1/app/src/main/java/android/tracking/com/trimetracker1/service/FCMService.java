@@ -26,7 +26,7 @@ public class FCMService extends FirebaseMessagingService {
         /* There are two types of messages data messages and notification messages. Data messages are handled here in onMessageReceived whether the app is in the foreground or background. Data messages are the type traditionally used with GCM. Notification messages are only received here in onMessageReceived when the app is in the foreground. When the app is in the background an automatically generated notification is displayed. */
 
         String notificationTitle = null, notificationBody = null;
-        String event = null, receiverId = null, senderId = null, senderName = null, plateNumber = null;
+        String event = null, receiverId = null, senderId = null, senderName = null, plateNumber = null, sessionId = null;
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
@@ -36,6 +36,7 @@ public class FCMService extends FirebaseMessagingService {
             senderId = remoteMessage.getData().get("senderId");
             senderName = remoteMessage.getData().get("senderName");
             plateNumber = remoteMessage.getData().get("plateNumber");
+            sessionId = remoteMessage.getData().get("sessionId");
         }
 
         // Check if message contains a notification payload.
@@ -49,7 +50,7 @@ public class FCMService extends FirebaseMessagingService {
         if (currentUser != null && !isEmpty(receiverId) && currentUser.getUid().equals(receiverId)) {
             // Also if you intend on generating your own notifications as a result of a received FCM
             // message, here is where that should be initiated. See sendNotification method below.
-            sendNotification(notificationTitle, notificationBody, event, receiverId, senderId, senderName, plateNumber);
+            sendNotification(notificationTitle, notificationBody, event, receiverId, senderId, senderName, plateNumber, sessionId);
         }
     }
 
@@ -57,13 +58,14 @@ public class FCMService extends FirebaseMessagingService {
      * //     * Create and show a simple notification containing the received FCM message.
      * //
      */
-    private void sendNotification(String notificationTitle, String notificationBody, String event, String receiverId, String senderId, String senderName, String plateNumber) {
+    private void sendNotification(String notificationTitle, String notificationBody, String event, String receiverId, String senderId, String senderName, String plateNumber, String sessionId) {
         Intent intent = new Intent(this, TrackActivity.class);
         intent.putExtra("event", event);
         intent.putExtra("receiverId", receiverId);
         intent.putExtra("senderId", senderId);
         intent.putExtra("senderName", senderName);
         intent.putExtra("plateNumber", plateNumber);
+        intent.putExtra("sessionId", sessionId);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);

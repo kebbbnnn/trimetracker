@@ -56,7 +56,13 @@ public class HomePageNav extends AppCompatActivity
         }
 
         starttripcard.setOnClickListener(v -> {
-            Intent intent = new Intent(HomePageNav.this, StartTrip.class);
+            Intent intent;
+            if (Session.getInstance().isOnGoingSession()) {
+                MapsActivity.setVehicle(Session.getInstance().getVehicle());
+                intent = new Intent(HomePageNav.this, MapsActivity.class);
+            } else {
+                intent = new Intent(HomePageNav.this, StartTrip.class);
+            }
             startActivity(intent);
         });
 

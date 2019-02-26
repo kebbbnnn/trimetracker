@@ -14,10 +14,7 @@ import android.view.View;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static android.tracking.com.trimetracker1.Utils.runOnBackgroundThread;
 import static android.tracking.com.trimetracker1.Utils.runOnUIThread;
@@ -48,7 +45,7 @@ public class SharedLocationActivity extends AppCompatActivity implements ItemCli
 
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference().child("messages");
-        eventRef.orderByChild("receiverId").equalTo(currentUserId).addListenerForSingleValueEvent(eventListener);
+        eventRef.orderByChild("receiverId").equalTo(currentUserId).addValueEventListener(eventListener);
     }
 
     @Override
@@ -85,7 +82,14 @@ public class SharedLocationActivity extends AppCompatActivity implements ItemCli
                 Map<String, Message> map = snapshot.getValue(objectsGTypeInd);
                 if (map != null) {
                     runOnUIThread(SharedLocationActivity.this::hideEmpty);
-                    eventList = new ArrayList<>(map.values());
+                    List<Message> temp = new ArrayList<>(map.values());
+                    eventList.clear();
+                    for (Message message : temp) {
+                        if (message.isLive()) {
+                            eventList.add(message);
+                        }
+                    }
+                    Collections.sort(eventList, new SortMessageByDate());
                     runOnUIThread(() -> adapter.setEventList(eventList));
                 } else {
                     runOnUIThread(SharedLocationActivity.this::showEmpty);
@@ -107,5 +111,13 @@ public class SharedLocationActivity extends AppCompatActivity implements ItemCli
     private void hideEmpty() {
         viewEmpty.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
+    }
+
+    class SortMessageByDate implements Comparator<Message> {
+
+        @Override
+        public int compare(Message o1, Message o2) {
+            return (int) (o2.getCreatedAt() - o1.getCreatedAt());
+        }
     }
 }
