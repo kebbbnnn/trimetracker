@@ -36,7 +36,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import static android.text.TextUtils.isEmpty;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, ItemClickSupport.OnItemClickListener {
-    private static final long LOCATION_UPDATE_INTERVAL = 30000L;
+    private static final long LOCATION_UPDATE_INTERVAL = 10000L;
     public static Vehicle vehicle;
     private SlidingUpPanelLayout slidingLayout;
     private ContactsListAdapter adapter;
