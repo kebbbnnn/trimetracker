@@ -12,6 +12,8 @@ exports.pushNotification = functions.database.ref('/messages/{pushId}').onWrite(
     /* Grab the current value of what was written to the Realtime Database */
         var valueObject = change.after.val();
     
+        if(!valueObject.live) return null;
+
     /* Create a notification and data payload. They contain the notification information, and message to be sent respectively */ 
         const payload = {
             notification: {
@@ -34,7 +36,8 @@ exports.pushNotification = functions.database.ref('/messages/{pushId}').onWrite(
             priority: "high",
             timeToLive: 60 * 60 * 24 //24 hours
         };
-    
+        
+    console.log("topic: notifications-{0}".format(valueObject.receiverId));
     return admin.messaging().sendToTopic("notifications-{0}".format(valueObject.receiverId), payload, options);
     });
 

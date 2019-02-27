@@ -1,10 +1,13 @@
 package android.tracking.com.trimetracker1;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.tracking.com.trimetracker1.data.LocationData;
+import android.tracking.com.trimetracker1.data.Message;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.widget.TextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -48,6 +51,38 @@ public class TrackActivity extends FragmentActivity implements OnMapReadyCallbac
                 }
             }
         }
+        DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference().child("messages");
+        eventRef.orderByChild("sessionId")
+                .equalTo(sessionId)
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            Message message = child.getValue(Message.class);
+                            if (message != null && !message.isLive()) {
+                                AlertDialog dialog = new AlertDialog.Builder(TrackActivity.this)
+                                        .setTitle("Session Ended!")
+                                        .setMessage(senderName + " stopped sharing his/her location.")
+                                        .setPositiveButton("Close", (_dialog, which) -> {
+                                            _dialog.dismiss();
+                                            finish();
+                                        }).create();
+                                dialog.setCanceledOnTouchOutside(false);
+                                dialog.setOnKeyListener((dialog1, keyCode, event) -> {
+                                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP)
+                                        finish();
+                                    return false;
+                                });
+                                dialog.show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);

@@ -68,6 +68,7 @@ public class SharedLocationActivity extends AppCompatActivity implements ItemCli
         intent.putExtra("senderId", event.getSenderId());
         intent.putExtra("senderName", event.getSenderName());
         intent.putExtra("plateNumber", event.getPlateNumber());
+        intent.putExtra("sessionId", event.getSessionId());
         startActivity(intent);
     }
 
