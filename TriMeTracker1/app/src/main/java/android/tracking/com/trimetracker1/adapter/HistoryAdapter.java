@@ -65,12 +65,17 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             try {
                 if (this.googleMap == null) return;
 
+                this.googleMap.clear();
+
                 LocationList data = (LocationList) mapView.getTag();
                 if (data == null) return;
 
                 List<LatLng> path = new ArrayList<>();
                 int size = data.data.size();
-                if (size == 2) {
+
+                if (size == 0) return;
+
+                if (size <= 2) {
                     for (int i = 0; i < size; i++) {
                         LocationData loc = data.data.get(i);
                         LatLng latLng = new LatLng(loc.lat, loc.lng);
