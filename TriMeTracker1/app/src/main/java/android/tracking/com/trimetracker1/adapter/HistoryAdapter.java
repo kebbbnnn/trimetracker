@@ -23,7 +23,7 @@ import java.util.List;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
 
-    private static final int BOUND_PADDING = 100;
+    private static final int BOUND_PADDING = 50;
 
     private List<LocationList> locationDataList;
 
@@ -69,11 +69,30 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
                 if (data == null) return;
 
                 List<LatLng> path = new ArrayList<>();
-                for (LocationData loc : data.data) {
-                    LatLng latLng = new LatLng(loc.lat, loc.lng);
-                    //this.googleMap.addMarker(new MarkerOptions().position(latLng).icon(dotIcon));
-                    this.googleMap.addMarker(new MarkerOptions().position(latLng));
-                    path.add(latLng);
+                int size = data.data.size();
+                if (size == 2) {
+                    for (int i = 0; i < size; i++) {
+                        LocationData loc = data.data.get(i);
+                        LatLng latLng = new LatLng(loc.lat, loc.lng);
+                        this.googleMap.addMarker(new MarkerOptions().position(latLng));
+                        path.add(latLng);
+                    }
+                } else {
+                    for (int i = 1; i < size - 1; i++) {
+                        LocationData loc = data.data.get(i);
+                        LatLng latLng = new LatLng(loc.lat, loc.lng);
+                        this.googleMap.addMarker(new MarkerOptions().position(latLng).icon(dotIcon));
+                        path.add(latLng);
+                    }
+                    LocationData loc1 = data.data.get(0);
+                    LatLng latLng1 = new LatLng(loc1.lat, loc1.lng);
+                    this.googleMap.addMarker(new MarkerOptions().position(latLng1));
+                    path.add(latLng1);
+
+                    LocationData loc2 = data.data.get(size - 1);
+                    LatLng latLng2 = new LatLng(loc2.lat, loc2.lng);
+                    this.googleMap.addMarker(new MarkerOptions().position(latLng2));
+                    path.add(latLng2);
                 }
 
                 LatLngBounds.Builder builder = new LatLngBounds.Builder();

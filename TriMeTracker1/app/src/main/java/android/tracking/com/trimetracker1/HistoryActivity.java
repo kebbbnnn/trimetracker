@@ -82,8 +82,8 @@ public class HistoryActivity extends AppCompatActivity {
             // Clear the map and free up resources by changing the map type to none.
             // Also reset the map when it gets reattached to layout, so the previous map would
             // not be displayed.
-            mapHolder.googleMap.clear();
-            mapHolder.googleMap.setMapType(GoogleMap.MAP_TYPE_NONE);
+            //mapHolder.googleMap.clear();
+            //mapHolder.googleMap.setMapType(GoogleMap.MAP_TYPE_NONE);
         }
     };
 
