@@ -23,7 +23,7 @@ import java.util.List;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
 
-    private static final int BOUND_PADDING = 50;
+    private static final int BOUND_PADDING = 100;
 
     private List<LocationList> locationDataList;
 

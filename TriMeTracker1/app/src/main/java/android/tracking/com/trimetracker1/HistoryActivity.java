@@ -9,11 +9,9 @@ import android.tracking.com.trimetracker1.adapter.HistoryAdapter;
 import android.tracking.com.trimetracker1.data.LocationData;
 import android.tracking.com.trimetracker1.data.LocationList;
 import android.tracking.com.trimetracker1.data.Message;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import com.crashlytics.android.Crashlytics;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.*;
 import com.google.gson.reflect.TypeToken;
@@ -29,13 +27,14 @@ import static android.tracking.com.trimetracker1.Utils.runOnBackgroundThread;
 import static android.tracking.com.trimetracker1.Utils.runOnUIThread;
 
 public class HistoryActivity extends AppCompatActivity {
-
+    public static final String EXTRA_MY_TRIPS = "MY_TRIPS";
     private List<LocationList> locationDataList = new ArrayList<>();
     private List<LocationList> locationDataListCopy = new ArrayList<>();
     private HistoryAdapter adapter = new HistoryAdapter();
     private RecyclerView recyclerView;
     private View viewEmpty;
     private int data_size = 0, counter = 0;
+    private boolean myTrip = false;
 
     private SessionDataListener eventListener = new SessionDataListener();
 
@@ -49,13 +48,16 @@ public class HistoryActivity extends AppCompatActivity {
         recyclerView.setRecyclerListener(mRecycleListener);
         viewEmpty = findViewById(R.id.textEmpty);
 
+        if (getIntent() != null) {
+            myTrip = getIntent().getBooleanExtra(EXTRA_MY_TRIPS, false);
+        }
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(R.string.history);
+            getSupportActionBar().setTitle(myTrip ? R.string.my_trips : R.string.history);
         }
 
         runOnBackgroundThread(() -> {
-            String json = Session.getInstance().getPreferences(this).getJson("history");
+            String json = Session.getInstance().getPreferences(this).getJson(myTrip ? "my_trips" : "history");
             if (!isEmpty(json)) {
                 //@formatter:off
                 Type type = new TypeToken<List<LocationList>>() {}.getType();
@@ -67,7 +69,11 @@ public class HistoryActivity extends AppCompatActivity {
 
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference().child("messages");
-        eventRef.orderByChild("receiverId").equalTo(currentUserId).addListenerForSingleValueEvent(eventListener);
+        if (myTrip) {
+            eventRef.orderByChild("senderId").equalTo(currentUserId).addListenerForSingleValueEvent(eventListener);
+        } else {
+            eventRef.orderByChild("receiverId").equalTo(currentUserId).addListenerForSingleValueEvent(eventListener);
+        }
     }
 
     /**
@@ -160,7 +166,7 @@ public class HistoryActivity extends AppCompatActivity {
                                 Type type = new TypeToken<List<LocationList>>() {}.getType();
                                 //@formatter:on
                                 String json = Session.getInstance().gson().toJson(locationDataList, type);
-                                Session.getInstance().getPreferences(HistoryActivity.this).saveJson("history", json);
+                                Session.getInstance().getPreferences(HistoryActivity.this).saveJson(myTrip ? "my_trips" : "history", json);
                                 runOnUIThread(() -> adapter.setLocationDataList(locationDataList));
                             }
                         }
