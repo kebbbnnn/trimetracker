@@ -27,6 +27,7 @@ public class TrackActivity extends FragmentActivity implements OnMapReadyCallbac
     private GoogleMap googleMap;
     private Marker marker;
     private DatabaseReference locRef;
+    private DatabaseReference eventRef;
     private ValueEventListener locationListener;
     private String senderId = null, senderName = null, plateNumber = null, sessionId = null;
 
@@ -51,38 +52,10 @@ public class TrackActivity extends FragmentActivity implements OnMapReadyCallbac
                 }
             }
         }
-        DatabaseReference eventRef = FirebaseDatabase.getInstance().getReference().child("messages");
-        eventRef.orderByChild("sessionId")
-                .equalTo(sessionId)
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot child : snapshot.getChildren()) {
-                            Message message = child.getValue(Message.class);
-                            if (message != null && !message.isLive()) {
-                                AlertDialog dialog = new AlertDialog.Builder(TrackActivity.this)
-                                        .setTitle("Session Ended!")
-                                        .setMessage(senderName + " stopped sharing his/her location.")
-                                        .setPositiveButton("Close", (_dialog, which) -> {
-                                            _dialog.dismiss();
-                                            finish();
-                                        }).create();
-                                dialog.setCanceledOnTouchOutside(false);
-                                dialog.setOnKeyListener((dialog1, keyCode, event) -> {
-                                    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP)
-                                        finish();
-                                    return false;
-                                });
-                                dialog.show();
-                            }
-                        }
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+        eventRef = FirebaseDatabase.getInstance().getReference().child("messages");
+        eventRef.orderByChild("sessionId").equalTo(sessionId).addValueEventListener(eventListener);
 
-                    }
-                });
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -129,11 +102,48 @@ public class TrackActivity extends FragmentActivity implements OnMapReadyCallbac
         }
     }
 
+    private ValueEventListener eventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot snapshot) {
+            try {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    Message message = child.getValue(Message.class);
+                    if (message != null && !message.isLive()) {
+                        AlertDialog dialog = new AlertDialog.Builder(TrackActivity.this)
+                                .setTitle("Session Ended!")
+                                .setMessage(senderName + " stopped sharing his/her location.")
+                                .setPositiveButton("Close", (_dialog, which) -> {
+                                    _dialog.dismiss();
+                                    finish();
+                                }).create();
+                        dialog.setCanceledOnTouchOutside(false);
+                        dialog.setOnKeyListener((dialog1, keyCode, event) -> {
+                            if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP)
+                                finish();
+                            return false;
+                        });
+                        dialog.show();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         if (locRef != null) {
             locRef.removeEventListener(locationListener);
+        }
+        if (eventRef != null) {
+            eventRef.removeEventListener(eventListener);
         }
     }
 }

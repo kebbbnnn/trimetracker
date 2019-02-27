@@ -9,6 +9,7 @@ import android.tracking.com.trimetracker1.adapter.HistoryAdapter;
 import android.tracking.com.trimetracker1.data.LocationData;
 import android.tracking.com.trimetracker1.data.LocationList;
 import android.tracking.com.trimetracker1.data.Message;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import com.crashlytics.android.Crashlytics;
@@ -146,21 +147,25 @@ public class HistoryActivity extends AppCompatActivity {
                     GenericTypeIndicator<HashMap<String, LocationData>> objectsGTypeInd = new GenericTypeIndicator<HashMap<String, LocationData>>() {};
                     //@formatter:on
                     Map<String, LocationData> map = snapshot.getValue(objectsGTypeInd);
-                    ArrayList<LocationData> list = new ArrayList<>(map.values());
-                    if (!list.isEmpty()) {
-                        locationDataListCopy.add(new LocationList(this.sender, plateNum, list));
-                        counter++;
-                        if (data_size == counter) {
-                            locationDataList.clear();
-                            locationDataList.addAll(locationDataListCopy);
-                            locationDataListCopy.clear();
-                            //@formatter:off
-                            Type type = new TypeToken<List<LocationList>>() {}.getType();
-                            //@formatter:on
-                            String json = Session.getInstance().gson().toJson(locationDataList, type);
-                            Session.getInstance().getPreferences(HistoryActivity.this).saveJson("history", json);
-                            runOnUIThread(() -> adapter.setLocationDataList(locationDataList));
+                    if (map != null) {
+                        ArrayList<LocationData> list = new ArrayList<>(map.values());
+                        if (!list.isEmpty()) {
+                            locationDataListCopy.add(new LocationList(this.sender, plateNum, list));
+                            counter++;
+                            if (data_size == counter) {
+                                locationDataList.clear();
+                                locationDataList.addAll(locationDataListCopy);
+                                locationDataListCopy.clear();
+                                //@formatter:off
+                                Type type = new TypeToken<List<LocationList>>() {}.getType();
+                                //@formatter:on
+                                String json = Session.getInstance().gson().toJson(locationDataList, type);
+                                Session.getInstance().getPreferences(HistoryActivity.this).saveJson("history", json);
+                                runOnUIThread(() -> adapter.setLocationDataList(locationDataList));
+                            }
                         }
+                    } else {
+                        --data_size;
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

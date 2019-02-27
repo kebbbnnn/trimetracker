@@ -46,9 +46,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         @Override
         public void onMapReady(GoogleMap googleMap) {
             MapsInitializer.initialize(Session.getInstance());
+            GoogleMapOptions googleMapOptions = new GoogleMapOptions().liteMode(true);
             this.googleMap = googleMap;
             this.googleMap.getUiSettings().setAllGesturesEnabled(false);
-            this.googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+            this.googleMap.setMapType(googleMapOptions.getMapType());
             setMapLocation();
         }
 
