@@ -1,5 +1,7 @@
 package android.tracking.com.trimetracker1;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -21,9 +23,12 @@ import java.util.List;
 
 public class AddContactsActivity extends AppCompatActivity implements ItemClickSupport.OnItemClickListener {
 
+    private final FirebaseUser CURRENT_USER = FirebaseAuth.getInstance().getCurrentUser();
     private RecyclerView recyclerView;
     private AddContactsAdapter adapter;
     private List<UserData> chosenUsers = new ArrayList<>();
+    private ProgressDialog dialog;
+    private DatabaseReference usersRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +41,7 @@ public class AddContactsActivity extends AppCompatActivity implements ItemClickS
 
         recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new AddContactsAdapter();
+        adapter = new AddContactsAdapter(this);
         recyclerView.setAdapter(adapter);
 
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(this);
@@ -74,18 +79,28 @@ public class AddContactsActivity extends AppCompatActivity implements ItemClickS
 
         if (id == R.id.btnAdd) {
             // do something here
-            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-            DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("users");
-            usersRef.orderByChild("id").equalTo(currentUser.getUid());
+            dialog = ProgressDialog.show(this, "", "Adding contacts. Please wait...", true);
+            final String userId = CURRENT_USER.getUid();
+            usersRef = FirebaseDatabase.getInstance().getReference().child("users");
             usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Log.e("test", "data: " + dataSnapshot.toString());
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot child : snapshot.getChildren()) {
+                        UserData found = child.getValue(UserData.class);
+                        if (found != null && found.id.equals(userId)) {
+                            String key = child.getKey();
+                            usersRef.child(key)
+                                    .child("contacts")
+                                    .setValue(chosenUsers)
+                                    .addOnSuccessListener(aVoid -> finishingUp());
+                        }
+                    }
+
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                    dialog.dismiss();
                 }
             });
         } else if (id == android.R.id.home) {
@@ -93,5 +108,32 @@ public class AddContactsActivity extends AppCompatActivity implements ItemClickS
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void finishingUp() {
+        final String userId = CURRENT_USER.getUid();
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    UserData found = child.getValue(UserData.class);
+                    if (found != null && found.id.equals(userId)) {
+                        final Context context = AddContactsActivity.this;
+                        String json = Session.getInstance().gson().toJson(found);
+                        Log.e("test", "json: " + json);
+                        Session.getInstance().getPreferences(context).saveJson(found.id + "-user", json);
+
+                        dialog.dismiss();
+                        finish();
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                dialog.dismiss();
+            }
+        });
     }
 }

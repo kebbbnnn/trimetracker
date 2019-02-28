@@ -41,6 +41,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private SlidingUpPanelLayout slidingLayout;
     private ContactsListAdapter adapter;
     private RecyclerView list;
+    private View emptyView;
     private Button btnEndSession;
     private GoogleMap mMap;
     private Marker marker;
@@ -58,11 +59,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        emptyView = findViewById(R.id.textEmpty);
         slidingLayout = findViewById(R.id.sliding_layout);
         btnEndSession = findViewById(R.id.buttonStop);
         list = findViewById(R.id.list);
         list.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new ContactsListAdapter();
+        adapter = new ContactsListAdapter(list, emptyView);
         list.setAdapter(adapter);
 
         ItemClickSupport.addTo(list).setOnItemClickListener(this);

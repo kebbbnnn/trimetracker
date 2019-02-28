@@ -9,14 +9,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class ContactsListAdapter extends RecyclerView.Adapter<ContactsListAdapter.ViewHolder> implements ValueEventListener {
-
+    private final FirebaseUser CURRENT_USER = FirebaseAuth.getInstance().getCurrentUser();
+    private final String CURRENT_USER_ID = CURRENT_USER.getUid();
+    private RecyclerView recyclerView;
+    private View emptyView;
     public List<UserData> users = new ArrayList<>();
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -29,34 +32,31 @@ public class ContactsListAdapter extends RecyclerView.Adapter<ContactsListAdapte
     }
 
     @Override
-    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-        final String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        Map<String, Object> usersMap = (Map<String, Object>) dataSnapshot.getValue();
-        for (Map.Entry<String, Object> entry : usersMap.entrySet()) {
-
-            Map singleUser = (Map) entry.getValue();
-
-            String id = (String) singleUser.get("id");
-            String name = (String) singleUser.get("name");
-            String email = (String) singleUser.get("email");
-            String mobile = (String) singleUser.get("mobile");
-            long createdAt = (Long) singleUser.get("createdAt");
-
-            //if (!currentUserId.equals(id)) {
-                UserData user = new UserData(id, name, email, mobile, createdAt);
-                users.add(user);
-            //}
+    public void onDataChange(@NonNull DataSnapshot snapshot) {
+        for (DataSnapshot child : snapshot.getChildren()) {
+            UserData userData = child.getValue(UserData.class);
+            if (userData != null && CURRENT_USER_ID.equals(userData.id)) {
+                if (userData.contacts.isEmpty()) {
+                    showEmpty();
+                } else {
+                    hideEmpty();
+                    users.addAll(userData.contacts);
+                }
+                break;
+            }
         }
         notifyDataSetChanged();
     }
 
     @Override
     public void onCancelled(@NonNull DatabaseError databaseError) {
-
+        showEmpty();
     }
 
-    public ContactsListAdapter() {
+    public ContactsListAdapter(RecyclerView recyclerView, View emptyView) {
         super();
+        this.recyclerView = recyclerView;
+        this.emptyView = emptyView;
         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("users");
         usersRef.addListenerForSingleValueEvent(this);
     }
@@ -77,5 +77,15 @@ public class ContactsListAdapter extends RecyclerView.Adapter<ContactsListAdapte
     @Override
     public int getItemCount() {
         return users.size();
+    }
+
+    private void showEmpty() {
+        recyclerView.setVisibility(View.GONE);
+        emptyView.setVisibility(View.VISIBLE);
+    }
+
+    private void hideEmpty() {
+        recyclerView.setVisibility(View.VISIBLE);
+        emptyView.setVisibility(View.GONE);
     }
 }

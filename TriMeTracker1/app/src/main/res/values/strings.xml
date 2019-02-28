@@ -30,5 +30,6 @@
     <string name="no_available_shared_location">No available shared location</string>
     <string name="end_session">End Session</string>
     <string name="add_contacts">Add Contacts</string>
+    <string name="contacts_not_available">Contacts not available</string>
 
 </resources>

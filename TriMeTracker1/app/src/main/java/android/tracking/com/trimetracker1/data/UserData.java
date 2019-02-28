@@ -9,7 +9,11 @@ public class UserData {
     public String email;
     public String mobile;
     public long createdAt;
-    public List<String> contacts = Collections.emptyList();
+    public List<UserData> contacts = Collections.emptyList();
+
+    //@formatter:off
+    public UserData(){}
+    //@formatter:on
 
     public UserData(String id, String name, String email, String mobile, long createdAt) {
         this.id = id;
