@@ -148,6 +148,8 @@ public class HomePageNav extends AppCompatActivity
             startActivity(intent);
         } else if (id == R.id.nav_logout) {
             FirebaseAuth.getInstance().signOut();
+            Session.getInstance().getPreferences(this).clearAll();
+            startActivity(new Intent(this, MainActivity.class));
             finish();
         }
 

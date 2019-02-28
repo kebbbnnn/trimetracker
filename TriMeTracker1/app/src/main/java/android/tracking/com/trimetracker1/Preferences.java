@@ -27,4 +27,8 @@ public class Preferences {
     public void saveJson(String key, String json) {
         preferences.edit().putString(key, json).apply();
     }
+
+    public void clearAll() {
+        preferences.edit().clear().apply();
+    }
 }
